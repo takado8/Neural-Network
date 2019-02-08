@@ -9,20 +9,18 @@ namespace XOR
 {
     class NeuralNetwork
     {
-        double learning_rate = 0.1;
+        double learning_rate = 0.05;
 
         int input_nodes;
         int hidden_nodes;
         int output_nodes;
-
-        //Matrix inputs;
+        // weights input-hidden
         Matrix weights_ih;
-        Matrix bias_h;
-        // Matrix hidden;
+        // weights hidden-output
         Matrix weights_ho;
+        // bias hidden and output
+        Matrix bias_h;    
         Matrix bias_o;
-        //  Matrix output;
-
 
         public NeuralNetwork(int _inputs_count, int _hidden_count, int _outputs_count)
         {
@@ -45,7 +43,6 @@ namespace XOR
             hidden += bias_h;
             // activation func
             hidden.map(Sigmoid);
-
             // next layer
             var output = weights_ho * hidden;
             output += bias_o;
@@ -56,22 +53,17 @@ namespace XOR
 
         public void train(Matrix inputs, Matrix target)
         {
-
             // multiply by weights
             var hidden = weights_ih * inputs;
             // add bias
             hidden += bias_h;
             // activation func
             hidden.map(Sigmoid);
-
             // next layer
-            // 
             var output = weights_ho * hidden;
             output += bias_o;
-
             output.map(Sigmoid);
-
-            // error....
+            // calculate output error
             var output_error = target - output;
 
             var gradients = Matrix.map(output, dSigmoid);
@@ -103,10 +95,9 @@ namespace XOR
         {
             return 1 / (1 + Math.Exp(-x));
         }
-        //juz bedzie sigmoida
         public double dSigmoid(double s)
         {
-           // double s = Sigmoid(x);
+            //value is already sigmoid.
             return s * (1 - s);
         }
     }

@@ -14,8 +14,6 @@ namespace XOR
         /// <summary>
         /// Init new matrix filled with 0.
         /// </summary>
-        /// <param name="_rows"></param>
-        /// <param name="_columns"></param>
         public Matrix(int _rows, int _columns)
         {
             columns = _columns;
@@ -25,8 +23,6 @@ namespace XOR
         /// <summary>
         /// Init new matrix filled with random numbers (-1;1) or filled with 1.
         /// </summary>
-        /// <param name="_rows"></param>
-        /// <param name="_columns"></param>
         /// <param name="random">if true returns random matrix, if false fill matrix with 1</param>
         public Matrix(int _rows, int _columns, bool random)
         {
@@ -107,7 +103,6 @@ namespace XOR
             {
                 throw new ArgumentException("Matrix can't be added.");
             }
-
             for (int i = 0; i < a.rows; i++)
             {
                 for (int k = 0; k < a.columns; k++)
@@ -130,7 +125,7 @@ namespace XOR
             {
                 for (int k = 0; k < a.columns; k++)
                 {
-                    temp.array[i, k] = a.array[i, k] - b.array[i, k];
+                    temp[i, k] = a[i, k] - b[i, k];
                 }
             }
             return temp;
@@ -145,7 +140,7 @@ namespace XOR
             {
                 for (int k = 0; k < matrix.columns; k++)
                 {
-                   newMx[i,k] =  matrix.array[i, k] * a;
+                   newMx[i,k] =  matrix[i, k] * a;
                 }
             }
             return newMx;
@@ -202,7 +197,6 @@ namespace XOR
             {
                 throw new ArgumentException("Matix can't be multiplyed.");
             }
-            // Matrix mx = new Matrix(rows, columns);
             for (int i = 0; i < rows; i++)
             {
                 for (int k = 0; k < columns; k++)
@@ -210,7 +204,6 @@ namespace XOR
                     array[i, k] *= b[i, k];
                 }
             }
-            // return mx;
         }
 
         public static Matrix Transpose(Matrix mx)
@@ -223,7 +216,7 @@ namespace XOR
             {
                 for (int j = 0; j < h; j++)
                 {
-                    result[j, i] = mx.array[i, j];
+                    result[j, i] = mx[i, j];
                 }
             }
             return new Matrix(mx.columns, mx.rows, result);
