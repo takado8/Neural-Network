@@ -21,16 +21,14 @@ namespace XOR
         // bias hidden and output
         Matrix bias_h;    
         Matrix bias_o;
-
+  
         public NeuralNetwork(int _inputs_count, int _hidden_count, int _outputs_count)
         {
             input_nodes = _inputs_count;
             hidden_nodes = _hidden_count;
             output_nodes = _outputs_count;
-
             weights_ih = new Matrix(hidden_nodes, input_nodes, true);
             weights_ho = new Matrix(output_nodes, hidden_nodes, true);
-
             bias_h = new Matrix(hidden_nodes, 1, true);
             bias_o = new Matrix(output_nodes, 1, true);
         }
