@@ -9,7 +9,7 @@ namespace XOR
 {
     class NeuralNetwork
     {
-        double learning_rate = 0.05;
+        double learning_rate = 0.15;
 
         int input_nodes;
         int hidden_nodes;

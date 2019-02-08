@@ -10,14 +10,13 @@ namespace XOR
     {
         static void Main(string[] args)
         {
-          
-           // NOR zmiana w master
+            // XOR
             double[][] inps =
             {
-                 new double[] { 0, 0 },  // 1
-                 new double[] { 1, 1 },  // gives 0
-                 new double[] { 1, 0 },  // 0
-                 new double[] { 0, 1 },  // 0
+                 new double[] { 0, 0 },  // 0
+                 new double[] { 1, 1 },  // 0
+                 new double[] { 1, 0 },  // 1
+                 new double[] { 0, 1 },  // 1
             };
             Matrix[] inputs = new Matrix[4];
             for (int i = 0; i < 4; i++)
@@ -26,13 +25,13 @@ namespace XOR
             }
 
             Matrix[] answers = new Matrix[4];
-            answers[0] = new Matrix(1, 1, false);          //1
+            answers[0] = new Matrix(1, 1);          //0
             answers[1] = new Matrix(1, 1);          //0
-            answers[2] = new Matrix(1, 1);   //0
-            answers[3] = new Matrix(1, 1);   //0
+            answers[2] = new Matrix(1, 1,false);   //1
+            answers[3] = new Matrix(1, 1,false);   //1
             
 
-            NeuralNetwork nn = new NeuralNetwork(2, 10, 1);
+            NeuralNetwork nn = new NeuralNetwork(2, 5, 1);
 
             Random rand = new Random();
 
