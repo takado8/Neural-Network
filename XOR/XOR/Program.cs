@@ -11,7 +11,7 @@ namespace XOR
         static void Main(string[] args)
         {
           
-           // NOR
+           // NOR zmiana w master
             double[][] inps =
             {
                  new double[] { 0, 0 },  // 1
