@@ -1,0 +1,7 @@
+C:\Users\korne\Desktop\Neural Network\xor\XOR\XOR\bin\Debug\XOR.exe.config
+C:\Users\korne\Desktop\Neural Network\xor\XOR\XOR\bin\Debug\XOR.exe
+C:\Users\korne\Desktop\Neural Network\xor\XOR\XOR\bin\Debug\XOR.pdb
+C:\Users\korne\Desktop\Neural Network\xor\XOR\XOR\obj\Debug\XOR.csproj.CoreCompileInputs.cache
+C:\Users\korne\Desktop\Neural Network\xor\XOR\XOR\obj\Debug\XOR.exe
+C:\Users\korne\Desktop\Neural Network\xor\XOR\XOR\obj\Debug\XOR.pdb
+C:\Users\korne\Desktop\Neural Network\xor\XOR\XOR\obj\Debug\XOR.csprojAssemblyReference.cache
