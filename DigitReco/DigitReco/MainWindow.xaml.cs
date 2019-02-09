@@ -58,38 +58,8 @@ namespace DigitReco
         {
             Hide();
 
+            start();
 
-
-            #region manual test matrix class
-            //double[,] arr = new double[1, 4];
-
-            //for (int i = 0; i < 1; i++)
-            //{
-            //    for (int k = 0; k < 4; k++)
-            //    {
-            //        arr[i, k] = r.Next(10);
-            //    }
-            //}
-            //Matrix matrix = new Matrix(1, 4, arr);
-            //matrix.print();
-            //Console.WriteLine();
-
-            //double[,] arr2 = new double[4, 1];
-
-            //for (int i = 0; i < 4; i++)
-            //{
-            //    for (int k = 0; k < 1; k++)
-            //    {
-            //        arr2[i, k] = r.Next(10);
-            //    }
-            //}
-            //Matrix matrix2 = new Matrix(4, 1, arr2);
-            //matrix2.print();
-            //Console.WriteLine();
-
-            //var mno = matrix2 * matrix;
-            //mno.print();
-            #endregion
         }
 
         void start()
