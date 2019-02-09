@@ -1,0 +1,34 @@
+﻿<Window x:Class="DigitReco.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DigitReco"
+        mc:Ignorable="d"
+        Background="#363636"
+        Title="MainWindow" MouseWheel="Slider_MouseWheel" Height="539.666" Width="555.999" Loaded="Window_Loaded" Closing="Window_Closing" KeyDown="Window_KeyDown" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" Closed="Window_Closed">
+    <Grid>
+        <Label FontFamily="Trebuchet MS" x:Name="progress" Foreground="Silver" FontSize="12"  HorizontalAlignment="Left" Margin="47,48,0,0" VerticalAlignment="Top"/>
+        <Label FontFamily="Trebuchet MS" x:Name="correct" Foreground="Silver" FontSize="12" HorizontalAlignment="Left" Margin="47,73,0,0" VerticalAlignment="Top"/>
+        <Label FontFamily="Trebuchet MS" Content="W" Foreground="Silver" FontSize="12" HorizontalAlignment="Left" Margin="31,152,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.69,0.403"/>
+        <Label FontFamily="Trebuchet MS" x:Name="percent" Foreground="Silver" FontSize="12"  HorizontalAlignment="Left" Margin="47,100,0,0" VerticalAlignment="Top"/>
+        <Button  Height="22" FontFamily="Trebuchet MS" Content="Recognize" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="56,151,0,0" Click="Button_Recognize_Click"/>
+        <Label FontFamily="Trebuchet MS" x:Name="Guesslbl" Foreground="Silver" FontSize="60" FontWeight="Bold" Content="-" HorizontalAlignment="Left" Margin="434,105,0,0" VerticalAlignment="Top"/>
+        <Image Cursor="Pen" x:Name="img" HorizontalAlignment="Left" Height="200" Margin="168,46,0,0" VerticalAlignment="Top" Width="200" MouseDown="Img_MouseDown" MouseMove="Img_MouseMove" MouseUp="Img_MouseUp"/>
+        <Button FontFamily="Trebuchet MS" Height="22" Content="Clear" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="56,184,0,0" Click="Button_Clear_Click"/>
+        <TextBlock TextWrapping="Wrap" LineHeight="16" FontFamily="Trebuchet MS" Foreground="Silver" FontSize="13" Text="Correct answer?&#x0a;Confirm and generate image&#x0a;to improove data set." HorizontalAlignment="Left" TextAlignment="Center" Margin="322,296,0,0" VerticalAlignment="Top" Width="170" Height="50"/>
+        <Button FontFamily="Trebuchet MS" Height="22" Content="Correct!" HorizontalAlignment="Left" Margin="373,361,0,0" VerticalAlignment="Top" Width="75" Click="Button_Correct_Click"/>
+        <TextBlock LineHeight="16" TextWrapping="Wrap" FontFamily="Trebuchet MS" Foreground="Silver" FontSize="13" Text="Incorrect? :(&#x0a; Tell us right answer,&#x0a;so we could eliminate mistakes!" HorizontalAlignment="Left" TextAlignment="Center" Margin="51,336,0,0" VerticalAlignment="Top" Width="238" Height="69"/>
+        <TextBox  x:Name="tbCorrectAns" MaxLines="1"  GotFocus="TextBox_GotFocus" Background="WhiteSmoke" Text="Nr" FontFamily="Trebuchet MS" FontSize="18" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="36" Margin="106,404,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="37" TextChanged="TbCorrectAns_TextChanged"/>
+        <Button FontFamily="Trebuchet MS" x:Name="confirm" IsTabStop="True" IsDefault="True" Height="22" Content="Confirm" HorizontalAlignment="Left" Margin="171,410,0,0" VerticalAlignment="Top" Width="75" Click="Button_Incorrect_Click"/>
+        <Slider LargeChange="1" SmallChange="1" Ticks="1" ValueChanged="Slider_ValueChanged" x:Name="slider" Minimum="0" Maximum="9" HorizontalAlignment="Left" Margin="74,450,0,0" VerticalAlignment="Top" Width="99"/>
+        <Label FontFamily="Trebuchet MS"  Foreground="Silver" FontSize="12" Content="Draw digit" HorizontalAlignment="Left" Margin="168,23,0,0" VerticalAlignment="Top"/>
+        <Rectangle StrokeThickness="2.2" Stroke="CornflowerBlue" HorizontalAlignment="Left" Height="204" Margin="166,44,0,0" VerticalAlignment="Top" Width="204" Cursor="Pen" RadiusY="6.333" RadiusX="6.333"/>
+        <Label FontFamily="Trebuchet MS" Content="S" Foreground="Silver" FontSize="12" HorizontalAlignment="Left" Margin="32,182,0,0" VerticalAlignment="Top"/>
+        <Label FontFamily="Trebuchet MS" Content="A" Foreground="Silver" FontSize="12" HorizontalAlignment="Left" Margin="249,411,0,0" VerticalAlignment="Top"/>
+        <Label FontFamily="Trebuchet MS" Content="D" Foreground="Silver" FontSize="12" HorizontalAlignment="Left" Margin="453,363,0,0" VerticalAlignment="Top"/>
+        <Label FontFamily="Trebuchet MS" Content="E" Foreground="Silver" FontSize="12" HorizontalAlignment="Left" Margin="154,464,0,0" VerticalAlignment="Top"/>
+        <Label FontFamily="Trebuchet MS" Content="Q" Foreground="Silver" FontSize="12" HorizontalAlignment="Left" Margin="70,464,0,0" VerticalAlignment="Top"/>
+
+    </Grid>
+</Window>
