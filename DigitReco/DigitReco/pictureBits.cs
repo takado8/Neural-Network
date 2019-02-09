@@ -15,8 +15,8 @@ namespace DigitReco
     class pictureBits
     {
         public byte label;
-        public int[,] arr = new int[28, 28];
-        public int[] oneDimArr = new int[784];
+        public int[,] arr;// = new int[28, 28];
+        public int[] oneDimArr;//= new int[784];
 
         public pictureBits(byte _label, int[,] _arr, int[] _oneDimArr)
         {

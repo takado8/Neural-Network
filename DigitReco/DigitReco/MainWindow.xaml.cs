@@ -22,9 +22,8 @@ using System.Diagnostics;
 
 namespace DigitReco
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
+    // Master branch
+
     public partial class MainWindow : Window
     {
         #region Dll imports and stuff
