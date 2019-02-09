@@ -56,12 +56,12 @@ namespace DigitReco
                         if (ee.Image[i, k] > 0)
                         {
                             arr[i, k] = 0;
-                            oneD_arr[28 * k + i] = 0;
+                            oneD_arr[28 * i + k] = 0;
                         }
                         else
                         {
                             arr[i, k] = 1;
-                            oneD_arr[28 * k + i] = 1;
+                            oneD_arr[28 * i + k] = 1;
                         }
                     }
                 }
@@ -79,7 +79,7 @@ namespace DigitReco
             {
                 for (int k = 0; k < 28; k++)
                 {
-                    oneD_arr[28 * k + i] = arr[i, k];
+                    oneD_arr[28 * i + k] = arr[i, k];
                 }
             }
             return oneD_arr; 

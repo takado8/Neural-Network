@@ -38,7 +38,6 @@ namespace DigitReco
         static Random random = new Random();
         #endregion
 
-        NeuralNetwork network = new NeuralNetwork(10, 784);
         List<pictureBits> pictures;
 
         double total = 0;
@@ -65,13 +64,14 @@ namespace DigitReco
         {
             string dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 
-            network.ReadWeights();
+            
             Hide();
             //start python exe 
             Process.Start(dir + @"\mnist.exe");
             using (WaitCursor wk = new WaitCursor())
             {
-                TrainOnMyDataset(false);
+                for (int i = 0; i < 10; i++)
+                    TrainOnMyDataset(false);
                 //  TrainOnMyDataset(false);
                 TrainOnMyDataset(true);
             }
@@ -81,36 +81,7 @@ namespace DigitReco
             Show();
         }
 
-        void Train()
-        {
-            Console.Clear();
-            correctCount = 0;
-            total = 0;
-            string TrainingSetPath = "train-images-idx3-ubyte.gz";
-            string TrainingLabelsPath = "train-labels-idx1-ubyte.gz";
-            Console.WriteLine("Reading training data...");
-            pictures = pictureBits.readmnist(TrainingSetPath, TrainingLabelsPath);
-            Console.WriteLine("database loaded, learning in progress...");
-            foreach (pictureBits pb in pictures)
-            {
-                foreach (Perceptron pc in network.perceptrones)
-                {
-                    pc.train(pb.oneDimArr, pb.label);
-                }
-                if (network.GiveAnswer(pb.oneDimArr) == pb.label)
-                {
-                    correctCount++;
-                }
-                total++;
-                //  Console.Clear();
-                progress.Content = "Total: " + total;
-                double rate = ((correctCount / total) * 100.0);
-                correct.Content = "Correct: " + correctCount;
-                percent.Content = "Percent: " + (int)rate + " %";
-                Console.Write("\r" + progress.Content + "\t||\t" + correct.Content + "\t||\t" + percent.Content);
-            }
-        }
-
+     
         void TrainOnMyDataset(bool OnlyTest)
         {
             Console.Clear();
@@ -129,17 +100,17 @@ namespace DigitReco
                 // Console.WriteLine(picture + "  "+ label);
                 var twoD = pictureBits.ImageTo2dIntArray(picture);
                 var oneD = pictureBits.image2dTo1d(twoD);
-                if (!OnlyTest)
-                {
-                    foreach (Perceptron pc in network.perceptrones)
-                    {
-                        pc.train(oneD, label);
-                    }
-                }
-                if (network.GiveAnswer(oneD) == label)
-                {
-                    correctCount++;
-                }
+                //if (!OnlyTest)
+                //{
+                //    foreach (Perceptron pc in network.perceptrones)
+                //    {
+                //        pc.train(oneD, label);
+                //    }
+                //}
+                //if (network.GiveAnswer(oneD) == label)
+                //{
+                //    correctCount++;
+                //}
                 total3++;
                 //  Console.Clear();
                 progress.Content = "Total: " + (total3 + total2 + total);
@@ -149,35 +120,6 @@ namespace DigitReco
                 Console.Write("\r" + progress.Content + "\t||\t" + correct.Content + "\t||\t" + percent.Content);
             }
             Console.WriteLine("\nEnd of training.");
-        }
-
-        void Test()
-        {
-            Console.Clear();
-
-            total2 = 0;
-            correctCount = 0;
-            string TestingSetPath = "t10k-images-idx3-ubyte.gz";
-            string TestingLabelsPath = "t10k-labels-idx1-ubyte.gz";
-            pictures = pictureBits.readmnist(TestingSetPath, TestingLabelsPath);
-            Console.WriteLine("database loaded, starting...");
-            foreach (pictureBits pb in pictures)
-            {
-                foreach (Perceptron pc in network.perceptrones)
-                {
-                    pc.train(pb.oneDimArr, pb.label);
-                }
-                if (network.GiveAnswer(pb.oneDimArr) == pb.label)
-                {
-                    correctCount++;
-                }
-                total2++;
-                progress.Content = "Total: " + (total + total2);
-                double rate = ((correctCount / total2) * 100.0);
-                correct.Content = "Correct: " + correctCount;
-                percent.Content = "Percent: " + (int)rate + " %";
-                Console.Write("\r" + progress.Content + "\t||\t" + correct.Content + "\t||\t" + percent.Content);
-            }
         }
 
         #region buttons
@@ -312,7 +254,7 @@ namespace DigitReco
                     {
                         var twoD = pictureBits.ImageTo2dIntArray(readyFileName);
                         var oneD = pictureBits.image2dTo1d(twoD);
-                        Guesslbl.Content = network.GiveAnswer(oneD);
+                       // Guesslbl.Content = network.GiveAnswer(oneD);
                     }
                     else
                     {
@@ -492,7 +434,7 @@ namespace DigitReco
 
         private void Window_Closed(object sender, EventArgs e)
         {
-            network.SaveWeights();
+         //   network.SaveWeights();
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
