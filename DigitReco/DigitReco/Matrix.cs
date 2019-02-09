@@ -9,8 +9,8 @@ namespace DigitReco
     class Matrix
     {
         double[,] array;
-        int columns;
-        int rows;
+        public int columns;
+        public int rows;
         /// <summary>
         /// Init new matrix filled with 0.
         /// </summary>
@@ -130,7 +130,42 @@ namespace DigitReco
             }
             return temp;
         }
-
+        public static bool operator ==(Matrix a, Matrix b)
+        {
+            if (a.rows != b.rows || a.columns != b.columns)
+            {
+                throw new ArgumentException("Matrix can't be added.");
+            }
+            else
+            {
+                for(int i =0; i<a.rows; i++)
+                {
+                    for(int k=0; k< a.columns; k++)
+                    {
+                        if (a[i, k] != b[i, k]) return false;
+                    }
+                }
+                return true;
+            }
+        }
+        public static bool operator !=(Matrix a, Matrix b)
+        {
+            if (a.rows != b.rows || a.columns != b.columns)
+            {
+                throw new ArgumentException("Matrix can't be added.");
+            }
+            else
+            {
+                for (int i = 0; i < a.rows; i++)
+                {
+                    for (int k = 0; k < a.columns; k++)
+                    {
+                        if (a[i, k] != b[i, k]) return true;
+                    }
+                }
+                return false;
+            }
+        }
         public static Matrix operator *(Matrix matrix, double a)
         {
             Matrix newMx = new Matrix(matrix.rows, matrix.columns);
@@ -226,6 +261,7 @@ namespace DigitReco
         {
             return random.NextDouble() * (maximum - minimum) + minimum;
         }
+
         public static Matrix InputfromArray(double[] arr)
         {
             Matrix mx = new Matrix(arr.Length, 1);
@@ -233,6 +269,13 @@ namespace DigitReco
             {
                 mx[i, 0] = arr[i];
             }
+            return mx;
+        }
+
+        public static Matrix TargetFromLabel(byte label)
+        {
+            Matrix mx = new Matrix(10, 1);
+            mx[label, 0] = 1;
             return mx;
         }
     }

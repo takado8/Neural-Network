@@ -10,6 +10,7 @@ namespace XOR
     {
         static void Main(string[] args)
         {
+
             // XOR master branch
             double[][] inps =
             {
@@ -29,8 +30,7 @@ namespace XOR
             answers[1] = new Matrix(1, 1);          //0
             answers[2] = new Matrix(1, 1,false);   //1
             answers[3] = new Matrix(1, 1,false);   //1
-            
-
+           
             NeuralNetwork nn = new NeuralNetwork(2, 5, 1);
 
             Random rand = new Random();
@@ -47,8 +47,6 @@ namespace XOR
                 nn.get_answer(x).print();
             }
           
-
-            //nn.train(mx, mx2);
 
             Console.WriteLine("end.... press any.");
             Console.ReadKey();

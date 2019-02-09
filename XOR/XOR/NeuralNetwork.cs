@@ -46,6 +46,12 @@ namespace XOR
             output += bias_o;
 
             output.map(Sigmoid);
+            //normalize output to 0 and 1
+            for (int i = 0; i < output.rows; i++)
+            {
+                if (output[i, 0] > 0.5) output[i, 0] = 1;
+                else output[i, 0] = 0;
+            }
             return output;
         }
 

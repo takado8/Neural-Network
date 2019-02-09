@@ -87,6 +87,7 @@ namespace DigitReco
  
         public static int[,] ImageTo2dIntArray(string path)
         {
+            
             Bitmap bmp = new Bitmap(path);
             int width = bmp.Width;
             int height = bmp.Height;

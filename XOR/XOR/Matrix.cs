@@ -9,8 +9,8 @@ namespace XOR
     class Matrix
     {
         double[,] array;
-        int columns;
-        int rows;
+       public int columns;
+       public int rows;
         /// <summary>
         /// Init new matrix filled with 0.
         /// </summary>

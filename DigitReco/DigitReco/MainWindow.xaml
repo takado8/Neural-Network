@@ -13,7 +13,7 @@
         <Label FontFamily="Trebuchet MS" Content="W" Foreground="Silver" FontSize="12" HorizontalAlignment="Left" Margin="31,152,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.69,0.403"/>
         <Label FontFamily="Trebuchet MS" x:Name="percent" Foreground="Silver" FontSize="12"  HorizontalAlignment="Left" Margin="47,100,0,0" VerticalAlignment="Top"/>
         <Button  Height="22" FontFamily="Trebuchet MS" Content="Recognize" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="56,151,0,0" Click="Button_Recognize_Click"/>
-        <Label FontFamily="Trebuchet MS" x:Name="Guesslbl" Foreground="Silver" FontSize="60" FontWeight="Bold" Content="-" HorizontalAlignment="Left" Margin="434,105,0,0" VerticalAlignment="Top"/>
+        <Label FontFamily="Trebuchet MS" x:Name="Guesslbl" Foreground="Silver" FontSize="60" FontWeight="Bold" Content="8" HorizontalAlignment="Left" Margin="434,105,0,0" VerticalAlignment="Top"/>
         <Image Cursor="Pen" x:Name="img" HorizontalAlignment="Left" Height="200" Margin="168,46,0,0" VerticalAlignment="Top" Width="200" MouseDown="Img_MouseDown" MouseMove="Img_MouseMove" MouseUp="Img_MouseUp"/>
         <Button FontFamily="Trebuchet MS" Height="22" Content="Clear" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="56,184,0,0" Click="Button_Clear_Click"/>
         <TextBlock TextWrapping="Wrap" LineHeight="16" FontFamily="Trebuchet MS" Foreground="Silver" FontSize="13" Text="Correct answer?&#x0a;Confirm and generate image&#x0a;to improove data set." HorizontalAlignment="Left" TextAlignment="Center" Margin="322,296,0,0" VerticalAlignment="Top" Width="170" Height="50"/>
@@ -29,6 +29,7 @@
         <Label FontFamily="Trebuchet MS" Content="D" Foreground="Silver" FontSize="12" HorizontalAlignment="Left" Margin="453,363,0,0" VerticalAlignment="Top"/>
         <Label FontFamily="Trebuchet MS" Content="E" Foreground="Silver" FontSize="12" HorizontalAlignment="Left" Margin="154,464,0,0" VerticalAlignment="Top"/>
         <Label FontFamily="Trebuchet MS" Content="Q" Foreground="Silver" FontSize="12" HorizontalAlignment="Left" Margin="70,464,0,0" VerticalAlignment="Top"/>
+        <Label FontFamily="Trebuchet MS" x:Name="Guesslblpercent" Foreground="Silver" FontSize="14" Content="" HorizontalAlignment="Left" Margin="389,184,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>

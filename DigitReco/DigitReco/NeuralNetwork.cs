@@ -8,7 +8,7 @@ namespace DigitReco
 {
     class NeuralNetwork
     {
-        double learning_rate = 0.15;
+        public double learning_rate = 0.02;
 
         int input_nodes;
         int hidden_nodes;
@@ -43,7 +43,6 @@ namespace DigitReco
             // next layer
             var output = weights_ho * hidden;
             output += bias_o;
-
             output.map(Sigmoid);
             return output;
         }
