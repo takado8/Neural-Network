@@ -10,7 +10,7 @@ namespace XOR
     {
         static void Main(string[] args)
         {
-            // XOR
+            // XOR master branch
             double[][] inps =
             {
                  new double[] { 0, 0 },  // 0
