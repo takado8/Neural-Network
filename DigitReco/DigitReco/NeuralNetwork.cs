@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace DigitReco
 {
@@ -93,8 +95,36 @@ namespace DigitReco
         }
         public double dSigmoid(double s)
         {
-            //value is already sigmoid.
+            //value s is already passed through sigmoid.
             return s * (1 - s);
+        }
+
+        public void saveWeights()
+        {
+            string dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\weights\";
+            if(!Directory.Exists(dir))
+            {
+                Directory.CreateDirectory(dir);
+            }
+            weights_ih.writeMatrixToFile(dir + "ih.w");
+            weights_ho.writeMatrixToFile(dir + "ho.w");
+            bias_h.writeMatrixToFile(dir + "bh.w");
+            bias_o.writeMatrixToFile(dir + "bo.w");
+        }
+        public void readWeights()
+        {
+            string dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\weights\";
+            if (!Directory.Exists(dir))
+            {
+                MessageBox.Show("Cannot read weights");
+            }
+            else
+            {
+                weights_ih.readMatrixFromFile(dir + "ih.w");
+                weights_ho.readMatrixFromFile(dir + "ho.w");
+                bias_h.readMatrixFromFile(dir + "bh.w");
+                bias_o.readMatrixFromFile(dir + "bo.w");
+            }
         }
     }
 }

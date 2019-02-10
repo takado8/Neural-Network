@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -138,9 +139,9 @@ namespace DigitReco
             }
             else
             {
-                for(int i =0; i<a.rows; i++)
+                for (int i = 0; i < a.rows; i++)
                 {
-                    for(int k=0; k< a.columns; k++)
+                    for (int k = 0; k < a.columns; k++)
                     {
                         if (a[i, k] != b[i, k]) return false;
                     }
@@ -278,5 +279,35 @@ namespace DigitReco
             mx[label, 0] = 1;
             return mx;
         }
+
+        public void writeMatrixToFile(string path)
+        {
+            using (var sw = new StreamWriter(path))
+            {
+                for (int i = 0; i < rows; i++)
+                {
+                    for (int j = 0; j < columns; j++)
+                    {
+                        sw.Write(array[i, j] + Environment.NewLine);
+                    }
+                }
+                sw.Flush();
+                sw.Close();
+            }
+        }
+        public void readMatrixFromFile(string path)
+        {
+            var lines = File.ReadAllLines(path);
+            int c = 0;
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < columns; j++)
+                {
+                    array[i, j] = double.Parse(lines[c++]);
+                }
+            }
+        }
     }
+
+
 }
