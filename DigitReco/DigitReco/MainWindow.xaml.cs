@@ -56,7 +56,6 @@ namespace DigitReco
             Hide();
             network.readWeights();
             start();
-            
         }
 
         void start()
@@ -67,7 +66,7 @@ namespace DigitReco
             Process.Start(dir + @"\mnist.exe");
             using (WaitCursor wk = new WaitCursor())
             {
-                for (int i = 0; i < 3; i++)
+                for (int i = 0; i < 2; i++)
                 {
                     TrainOnMyDataset(false);
                     Console.WriteLine("\nEnd of " + (i + 1) + " loop.");
