@@ -18,7 +18,7 @@ using System.Numerics;
 
 namespace Snake2
 {
-    // snake master branch
+    // snake v1 working state.
 
     public partial class MainWindow : Window
     {
