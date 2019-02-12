@@ -7,9 +7,9 @@
         xmlns:local="clr-namespace:Snake2"
         mc:Ignorable="d"
         Background="#303030"
-        Title="MainWindow" Height="373.572" Width="371.149" KeyDown="Window_KeyDown" Loaded="Loaded_Loaded">
+        Title="MainWindow" Height="373.572" Width="609.622" KeyDown="Window_KeyDown" Loaded="Loaded_Loaded">
     <Grid>
-        <Canvas  x:Name="canv" Background="#404040" HorizontalAlignment="Left" Height="200" Margin="16,18,0,0" VerticalAlignment="Top" Width="200">
+        <Canvas  x:Name="canv" Background="#404040" HorizontalAlignment="Left" Height="200" Margin="28,27,0,0" VerticalAlignment="Top" Width="200">
             <Rectangle Fill="ForestGreen" x:Name="food" HorizontalAlignment="Left" Height="12" Stroke="Black" VerticalAlignment="Top" Width="12" RenderTransformOrigin="0.54,0.139" Canvas.Left="132" Canvas.Top="110" RadiusY="10.5" RadiusX="10.5">
                 <Rectangle.RenderTransform>
                     <TransformGroup>
@@ -21,17 +21,26 @@
                 </Rectangle.RenderTransform>
             </Rectangle>
         </Canvas>
-        <Label HorizontalAlignment="Left" Margin="232,10,0,0" VerticalAlignment="Top">
-            <Label Content="Score: 0" FontFamily="Trebuchet MS" x:Name="lblScore" Foreground="Silver" FontSize="20" RenderTransformOrigin="-0.675,0.087"/>
+        <Label HorizontalAlignment="Left" Margin="375,35,0,0" VerticalAlignment="Top">
+            <Label Content="Top Score: 0" FontFamily="Trebuchet MS" x:Name="lblTopScore" Foreground="Silver" FontSize="20" RenderTransformOrigin="-0.675,0.087"/>
         </Label>
-        <CheckBox x:Name="wsad" Checked="CheckBoxWSAD_Checked" FontFamily="Trebuchet MS" Foreground="Silver" VerticalContentAlignment="Bottom" Content="W S A D" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="255,88,0,0"/>
-        <CheckBox x:Name="arrows" Checked="Arrows_Checked" FontWeight="Bold" FontSize="14" FontFamily="Trebuchet MS" Foreground="Silver" VerticalContentAlignment="Bottom" Content="&#x21E7; &#x21E9; &#x21E6; &#x21E8;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="255,108,0,0"/>
-        <Label Content="Control" x:Name="lblctrl" FontFamily="Trebuchet MS" Foreground="Silver" HorizontalAlignment="Left" Margin="238,57,0,0" VerticalAlignment="Top" Width="122"/>
-        <Button Content="Start" Click="Button_Click" HorizontalAlignment="Left" Margin="129,247,0,0" VerticalAlignment="Top" Width="75" Height="35"/>
-        <Label Content="Speed" FontFamily="Trebuchet MS" Foreground="Silver" HorizontalAlignment="Left" Margin="238,142,0,0" VerticalAlignment="Top" Width="71"/>
-        <CheckBox x:Name="slow" Checked="Slow_Checked" FontFamily="Trebuchet MS" Foreground="Silver" VerticalContentAlignment="Bottom" Content="Slow" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="255,172,0,0"/>
-        <CheckBox x:Name="mediumspeed" Checked="Mediumspeed_Checked" FontFamily="Trebuchet MS" Foreground="Silver" VerticalContentAlignment="Bottom" Content="Medium" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="255,192,0,0"/>
-        <CheckBox x:Name="fast" Checked="Fast_Checked"  FontFamily="Trebuchet MS" Foreground="Silver" VerticalContentAlignment="Bottom" Content="Fast" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="255,212,0,0"/>
+        <CheckBox x:Name="wsad" Checked="CheckBoxWSAD_Checked" FontFamily="Trebuchet MS" Foreground="Silver" VerticalContentAlignment="Bottom" Content="W S A D" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="267,71,0,0"/>
+        <CheckBox x:Name="arrows" Checked="Arrows_Checked" FontWeight="Bold" FontSize="14" FontFamily="Trebuchet MS" Foreground="Silver" VerticalContentAlignment="Bottom" Content="&#x21E7; &#x21E9; &#x21E6; &#x21E8;" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="267,91,0,0"/>
+        <Label Content="Control" x:Name="lblctrl" FontFamily="Trebuchet MS" Foreground="Silver" HorizontalAlignment="Left" Margin="250,40,0,0" VerticalAlignment="Top" Width="122"/>
+        <Button Content="Start" Click="Button_Click" HorizontalAlignment="Left" Margin="141,256,0,0" VerticalAlignment="Top" Width="75" Height="35"/>
+        <Label Content="Speed" FontFamily="Trebuchet MS" Foreground="Silver" HorizontalAlignment="Left" Margin="250,125,0,0" VerticalAlignment="Top" Width="71"/>
+        <CheckBox x:Name="slow" Checked="Slow_Checked" FontFamily="Trebuchet MS" Foreground="Silver" VerticalContentAlignment="Bottom" Content="Slow" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="267,155,0,0"/>
+        <CheckBox x:Name="mediumspeed" Checked="Mediumspeed_Checked" FontFamily="Trebuchet MS" Foreground="Silver" VerticalContentAlignment="Bottom" Content="Medium" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="267,175,0,0"/>
+        <CheckBox x:Name="fast" Checked="Fast_Checked"  FontFamily="Trebuchet MS" Foreground="Silver" VerticalContentAlignment="Bottom" Content="Fast" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="267,195,0,0"/>
+        <Label HorizontalAlignment="Left" Margin="375,73,0,0" VerticalAlignment="Top">
+            <Label Content="Score: 0" FontFamily="Trebuchet MS" x:Name="lblScore" Foreground="Silver" FontSize="16" RenderTransformOrigin="-0.675,0.087"/>
+        </Label>
+        <Label HorizontalAlignment="Left" Margin="375,107,0,0" VerticalAlignment="Top">
+            <Label Content="Games: 0" FontFamily="Trebuchet MS" x:Name="lblgames" Foreground="Silver" FontSize="16" RenderTransformOrigin="-0.675,0.087"/>
+        </Label>
+        <Label HorizontalAlignment="Left" Margin="375,143,0,0" VerticalAlignment="Top">
+            <Label Content="Average: 0" FontFamily="Trebuchet MS" x:Name="lblaverage" Foreground="Silver" FontSize="16" RenderTransformOrigin="-0.675,0.087"/>
+        </Label>
 
     </Grid>
 </Window>

@@ -11,7 +11,7 @@ namespace Snake2
 
     class NeuralNetwork
     {
-        public double learning_rate = 0.02;
+        public double learning_rate = 0.01;
 
         int input_nodes;
         int hidden_nodes;
