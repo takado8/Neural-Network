@@ -185,7 +185,7 @@ namespace Snake2
                     canv.Children.Add(sn.segments[sn.segments.Count - 1].rec);
                 }
                 // lblctrl.Content = foodAngle();
-             //   harddrive();
+               // harddrive();
                 var networkInput = makeInput();
               var target = makeTarget(nextDir);
 
@@ -194,7 +194,7 @@ namespace Snake2
                 // inputsList.Add(networkInput);
                 // targetsList.Add(target);
 
-                // neuralNetwork.train(networkInput, target);
+              //  neuralNetwork.train(networkInput, target);
 
                 var networkAnswer = neuralNetwork.get_answer(networkInput);
                 networkDrives(networkAnswer);
