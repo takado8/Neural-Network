@@ -12,17 +12,17 @@ namespace Snake2
     class NeuralNetwork
     {
         public double learning_rate = 0.01;
-
+        public double adjustment;
         int input_nodes;
         int hidden_nodes;
         int output_nodes;
         // weights input-hidden
-        Matrix weights_ih;
+        public Matrix weights_ih;
         // weights hidden-output
-        Matrix weights_ho;
+        public Matrix weights_ho;
         // bias hidden and output
-        Matrix bias_h;
-        Matrix bias_o;
+        public Matrix bias_h;
+        public Matrix bias_o;
 
         public NeuralNetwork(int _inputs_count, int _hidden_count, int _outputs_count)
         {
@@ -100,9 +100,10 @@ namespace Snake2
             return s * (1 - s);
         }
 
-        public void saveWeights()
+        public void saveWeights(string dir = "")
         {
-            string dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\weights\";
+            if (dir == "")
+                dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\weights\";
             if (!Directory.Exists(dir))
             {
                 Directory.CreateDirectory(dir);
@@ -112,12 +113,14 @@ namespace Snake2
             bias_h.writeMatrixToFile(dir + "bh.w");
             bias_o.writeMatrixToFile(dir + "bo.w");
         }
-        public void readWeights()
+        public bool readWeights(string dir = "")
         {
-            string dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\weights\";
+            if (dir == "")
+                dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\weights\";
             if (!Directory.Exists(dir))
             {
                 System.Windows.MessageBox.Show("Cannot read weights");
+                return false;
             }
             else
             {
@@ -125,6 +128,7 @@ namespace Snake2
                 weights_ho.readMatrixFromFile(dir + "ho.w");
                 bias_h.readMatrixFromFile(dir + "bh.w");
                 bias_o.readMatrixFromFile(dir + "bo.w");
+                return true;
             }
         }
     }

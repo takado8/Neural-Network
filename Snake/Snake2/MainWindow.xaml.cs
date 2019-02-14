@@ -22,7 +22,10 @@ namespace Snake2
 
     public partial class MainWindow : Window
     {
+        int networkIndex = 0;
         int speed = 40;
+        double evolutionPoints = 0;
+        double totalEvolutionPoints = 0;
         double points = 0;
         double hihgpoints = 0;
         double totalPoints = 0;
@@ -36,7 +39,10 @@ namespace Snake2
         Key left;
         Key right;
 
-        NeuralNetwork neuralNetwork = new NeuralNetwork(12, 128, 4);
+        NeuralNetwork neuralNetwork = new NeuralNetwork(4, 128, 3);
+        const int populationCount = 60;
+        int generations = 1000;
+        Evolution evo = new Evolution(populationCount);
 
         List<Matrix> inputsList = new List<Matrix>();
         List<Matrix> targetsList = new List<Matrix>();
@@ -75,47 +81,6 @@ namespace Snake2
                 //sn.segments[0].Direction;
                 nextDir = snake.segment.dir.right;
             }
-
-
-            //else if (e.Key == left)// && sn.segments[0].Direction != snake.segment.dir.right)// && left >= step)
-            //{
-
-            //    if (sn.segments[0].Direction == snake.segment.dir.up)
-            //    {
-            //        nextDir = snake.segment.dir.left;
-            //    }
-            //    else if (sn.segments[0].Direction == snake.segment.dir.down)
-            //    {
-            //        nextDir = snake.segment.dir.right;
-            //    }
-            //    else if (sn.segments[0].Direction == snake.segment.dir.left)
-            //    {
-            //        nextDir = snake.segment.dir.down;
-            //    }
-            //    else if (sn.segments[0].Direction == snake.segment.dir.right)
-            //    {
-            //        nextDir = snake.segment.dir.up;
-            //    }
-            //}
-            //else if (e.Key == right)// && sn.segments[0].Direction != snake.segment.dir.left)// && left <= maxLeft)
-            //{
-            //    if (sn.segments[0].Direction == snake.segment.dir.up)
-            //    {
-            //        nextDir = snake.segment.dir.right;
-            //    }
-            //    else if (sn.segments[0].Direction == snake.segment.dir.down)
-            //    {
-            //        nextDir = snake.segment.dir.left;
-            //    }
-            //    else if (sn.segments[0].Direction == snake.segment.dir.left)
-            //    {
-            //        nextDir = snake.segment.dir.up;
-            //    }
-            //    else if (sn.segments[0].Direction == snake.segment.dir.right)
-            //    {
-            //        nextDir = snake.segment.dir.down;
-            //    }
-            //}
         }
         bool selfColision()
         {
@@ -146,7 +111,13 @@ namespace Snake2
         }
         private void Loaded_Loaded(object sender, RoutedEventArgs e)
         {
-            neuralNetwork.readWeights();
+            for (int i = 0; i < evo.population.Count; i++)
+            {
+                var dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)
+                    + @"\weights" + i + @"\";
+                if (!evo.population[i].readWeights(dir)) break;
+            }
+            // neuralNetwork.readWeights();
             wsad.IsChecked = true;
             mediumspeed.IsChecked = true;
             timer.Tick += Timer_Tick;
@@ -154,16 +125,47 @@ namespace Snake2
             canv.Children.Add(sn.segments[0].rec);
             canv.Children.Add(sn.segments[1].rec);
         }
+        private static double GetDistance(double x1, double y1, double x2, double y2)
+        {
+            return Math.Sqrt(Math.Pow((x2 - x1), 2) + Math.Pow((y2 - y1), 2));
+        }
         int c = 3;
         double decisionCount = 0;
+        double prevFoodDist = 9999;
         private void Timer_Tick(object sender, EventArgs e)
         {
             if (c++ == 4)
             {
+                lblScore.Content = "Score: " + evolutionPoints;
+
+                if (selfColision())
+                {
+                    gameover(true);
+                }
+                var sntop = double.Parse(sn.segments[0].rec.GetValue(Canvas.TopProperty).ToString());
+                var snleft = double.Parse(sn.segments[0].rec.GetValue(Canvas.LeftProperty).ToString());
+                var foodtop = double.Parse(food.GetValue(Canvas.TopProperty).ToString());
+                var foodleft = double.Parse(food.GetValue(Canvas.LeftProperty).ToString());
+                var foodDist = GetDistance(snleft, sntop, foodleft, foodtop);
+                if (foodDist < prevFoodDist)
+                {
+                    evolutionPoints++;
+                }
+                else
+                {
+                    evolutionPoints -= 3;
+                    if (evolutionPoints < -30)
+                    {
+                       // evolutionPoints -= 50;
+                        gameover(true);
+                    }
+                }
+                prevFoodDist = foodDist;
                 if (foodCollision(sn.segments[0].rec))
                 {
                     points++;
-                    lblScore.Content = "Score: " + points;
+                    evolutionPoints += 1000;
+                    lblScore.Content = "Score: " + evolutionPoints;
                     if (points > hihgpoints)
                     {
                         hihgpoints = points;
@@ -184,19 +186,21 @@ namespace Snake2
                     sn.segments.Add(sg);
                     canv.Children.Add(sn.segments[sn.segments.Count - 1].rec);
                 }
-                // lblctrl.Content = foodAngle();
-               // harddrive();
+                 // int way = BotDrives();
+                 //assignDirection(way);
+
                 var networkInput = makeInput();
-              var target = makeTarget(nextDir);
+               //  var target = makeTarget(way);
 
                 decisionCount++;
 
-                // inputsList.Add(networkInput);
-                // targetsList.Add(target);
-
-              //  neuralNetwork.train(networkInput, target);
-
-                var networkAnswer = neuralNetwork.get_answer(networkInput);
+                //  inputsList.Add(networkInput);
+                //  targetsList.Add(target);
+                 // neuralNetwork.train(networkInput, target);
+                //  evo.population[networkIndex].train(networkInput, target);
+                var networkAnswer = evo.population[networkIndex].get_answer(networkInput);
+               // var networkAnswer = neuralNetwork.get_answer(networkInput);
+                // targetsList.Add(networkAnswer);
                 networkDrives(networkAnswer);
                 c = 0;
                 // nex dir for each segment
@@ -206,9 +210,9 @@ namespace Snake2
                 }
                 // assign new dir to head (keybord input)
                 sn[0].Direction = nextDir;
-                if (c4++ > 60)
+                if (c4++ > 100)
                 {
-                    //food was not taken in 60 steps, infinite loop probably
+                    //food was not taken in 100 steps, infinite loop probably
                     throwFood();
                 }
             }
@@ -239,105 +243,44 @@ namespace Snake2
                     else sn.segments[i].rec.SetValue(Canvas.LeftProperty, left + step);
                 }
             }
-            if (selfColision())
-            {
-                gameover(true);
-            }
+
         }
         int c4 = 0;
         int counter = 0;
         int index = 0;
         int c2 = 0;
         int c3 = 0;
-        int c5 = 0;
-        void harddrive()
+        //  int c5 = 0;
+        int BotDrives()
         {
             // if angle is + food is on right, if - on left
             var angle = foodAngle();
             int way = 0;
+            if (lookahead() == 1)
+            {
+                if (lookleft() == 1)
+                {
+                    way = 1; // for going right;
+                }
+                else way = -1; // for going left
+            }
+            else
+            {
+                if (angle < -0.18)
+                {
+                    if (lookleft() == 0)
+                        way = -1;
+                }
+                else if (angle > 0.18)
+                {
+                    if (lookright() == 0)
+                        way = 1;
+                }
+                else way = 0;
+            }
+            return way;
             #region commented
-            //// }
-            //if (lookahead() == 1)
-            //{
-            //    if (c3++ % 3 == 0)
-            //    {
-            //        if (lookright() == 0)
-            //        {
-
-            //            way = 1; // for going right;
-            //        }
-            //        else
-            //        {
-            //            way = -1; //left
-            //        }
-            //    }
-            //    else
-            //    {
-            //        if (lookleft() == 0)
-            //        {
-
-            //            way = -1;
-            //        }
-            //        else
-            //        {
-            //            way = 1;
-            //        }
-            //    }
-            //}
-            //else
-            //{
-            //    if (c2++ % 2 == 0 && (sn[0].Direction == snake.segment.dir.up || sn[0].Direction == snake.segment.dir.left))
-            //    {
-            //        if (angle < -0.18)
-            //        {
-            //            way = -1;
-            //        }
-            //        else if (angle > 0.18)
-            //        {
-            //            way = 1;
-            //        }
-            //    }
-            //}
-
-            //if (way == -1)// && sn.segments[0].Direction != snake.segment.dir.right)// && left >= step)
-            //{
-            //    if (sn.segments[0].Direction == snake.segment.dir.up)
-            //    {
-            //        nextDir = snake.segment.dir.left;
-            //    }
-            //    else if (sn.segments[0].Direction == snake.segment.dir.down)
-            //    {
-            //        nextDir = snake.segment.dir.right;
-            //    }
-            //    else if (sn.segments[0].Direction == snake.segment.dir.left)
-            //    {
-            //        nextDir = snake.segment.dir.down;
-            //    }
-            //    else if (sn.segments[0].Direction == snake.segment.dir.right)
-            //    {
-            //        nextDir = snake.segment.dir.up;
-            //    }
-            //}
-            //else if (way == 1)// && sn.segments[0].Direction != snake.segment.dir.left)// && left <= maxLeft)
-            //{
-            //    if (sn.segments[0].Direction == snake.segment.dir.up)
-            //    {
-            //        nextDir = snake.segment.dir.right;
-            //    }
-            //    else if (sn.segments[0].Direction == snake.segment.dir.down)
-            //    {
-            //        nextDir = snake.segment.dir.left;
-            //    }
-            //    else if (sn.segments[0].Direction == snake.segment.dir.left)
-            //    {
-            //        nextDir = snake.segment.dir.up;
-            //    }
-            //    else if (sn.segments[0].Direction == snake.segment.dir.right)
-            //    {
-            //        nextDir = snake.segment.dir.down;
-            //    }
-            //}
-            #endregion
+            /*
             if (sn[0].Direction == snake.segment.dir.down)
             {
                 if (lookahead() == 1)
@@ -443,7 +386,51 @@ namespace Snake2
                     else nextDir = snake.segment.dir.right;
                 }
             }
-            c5++;
+            */
+            // c5++;
+            #endregion
+        }
+        void assignDirection(int way)
+        {
+            if (way == -1) // go left
+            {
+                if (sn.segments[0].Direction == snake.segment.dir.up)
+                {
+                    nextDir = snake.segment.dir.left;
+                }
+                else if (sn.segments[0].Direction == snake.segment.dir.down)
+                {
+                    nextDir = snake.segment.dir.right;
+                }
+                else if (sn.segments[0].Direction == snake.segment.dir.left)
+                {
+                    nextDir = snake.segment.dir.down;
+                }
+                else if (sn.segments[0].Direction == snake.segment.dir.right)
+                {
+                    nextDir = snake.segment.dir.up;
+                }
+            }
+            else if (way == 1) // go right
+            {
+                if (sn.segments[0].Direction == snake.segment.dir.up)
+                {
+                    nextDir = snake.segment.dir.right;
+                }
+                else if (sn.segments[0].Direction == snake.segment.dir.down)
+                {
+                    nextDir = snake.segment.dir.left;
+                }
+                else if (sn.segments[0].Direction == snake.segment.dir.left)
+                {
+                    nextDir = snake.segment.dir.up;
+                }
+                else if (sn.segments[0].Direction == snake.segment.dir.right)
+                {
+                    nextDir = snake.segment.dir.down;
+                }
+            }
+            //else don't change direction.
         }
         void networkDrives(Matrix Networkanswer)
         {
@@ -460,22 +447,20 @@ namespace Snake2
             }
             switch (maxIndex)
             {
-                case 0: nextDir = snake.segment.dir.up; break;
-                case 1: nextDir = snake.segment.dir.down; break;
-                case 2: nextDir = snake.segment.dir.left; break;
-                case 3: nextDir = snake.segment.dir.right; break;
+                case 0: break; //don't change direction 
+                case 1: assignDirection(1); break;  // go right
+                case 2: assignDirection(-1); break;
+                    //case 3: nextDir = snake.segment.dir.right; break;
             }
-
         }
-        Matrix makeTarget(snake.segment.dir dir)
+        Matrix makeTarget(int way)
         {
-            Matrix mx = new Matrix(4, 1);
-            switch (dir)
+            Matrix mx = new Matrix(3, 1);
+            switch (way)
             {
-                case snake.segment.dir.up: mx[0, 0] = 1; break;
-                case snake.segment.dir.down: mx[1, 0] = 1; break;
-                case snake.segment.dir.left: mx[2, 0] = 1; break;
-                case snake.segment.dir.right: mx[3, 0] = 1; break;
+                case 0: mx[0, 0] = 1; break; // don't change direction
+                case 1: mx[1, 0] = 1; break; // go right
+                case -1: mx[2, 0] = 1; break; // go left              
             }
             return mx;
         }
@@ -485,22 +470,23 @@ namespace Snake2
             var snleft = double.Parse(sn.segments[0].rec.GetValue(Canvas.LeftProperty).ToString());
             var foodtop = double.Parse(food.GetValue(Canvas.TopProperty).ToString());
             var foodleft = double.Parse(food.GetValue(Canvas.LeftProperty).ToString());
-            Matrix input = new Matrix(12, 1);
-            input[0, 0] = snleft / 200;
-            input[1, 0] = sntop / 200;
-            switch (sn[0].Direction)
-            {
-                case snake.segment.dir.up: input[2, 0] = 1; break;
-                case snake.segment.dir.down: input[3, 0] = 1; break;
-                case snake.segment.dir.left: input[4, 0] = 1; break;
-                case snake.segment.dir.right: input[5, 0] = 1; break;
-            }
-            input[6, 0] = lookahead();
-            input[7, 0] = lookleft();
-            input[8, 0] = lookright();
-            input[9, 0] = foodAngle();
-            input[10, 0] = foodleft / 200;
-            input[11, 0] = foodtop / 200;
+            Matrix input = new Matrix(4, 1);
+            input[0, 0] = lookahead();
+            input[1, 0] = lookright();
+            input[2, 0] = lookleft();
+            //   input[3, 0] = snleft / 200;
+            //  input[4, 0] = sntop / 200;
+            //switch (sn[0].Direction)
+            //{
+            //    case snake.segment.dir.up: input[2, 0] = 1; break;
+            //    case snake.segment.dir.down: input[3, 0] = 1; break;
+            //    case snake.segment.dir.left: input[4, 0] = 1; break;
+            //    case snake.segment.dir.right: input[5, 0] = 1; break;
+            //}
+            //   input[5, 0] = foodleft / 200;
+            //  input[6, 0] = foodtop / 200;
+            input[3, 0] = foodAngle();
+
 
             return input;
         }
@@ -620,9 +606,89 @@ namespace Snake2
             return false;
         }
 
-      
+        int findDecision()
+        {
+            int i;
+            for (i = 0; i < inputsList.Count; i++)
+            {
+                int count = 0;
+                for (int k = 0; k < 3; k++)
+                {
+                    if (inputsList[i][k, 0] == 0) // look around snake results in network input.
+                    {
+                        count++;
+                        if (count == 2) // there was other option
+                        {
+                            return i;
+                        }
+                    }
+                }
+            }
+            return -1;
+        }
         void gameover(bool flag = false)
-        {     
+        {
+          //  evolutionPoints *= 2;
+           // totalEvolutionPoints += evolutionPoints;
+            evo.population[networkIndex].adjustment = evolutionPoints;
+            if (evo.population[networkIndex].adjustment > evo.maxAdj) evo.maxAdj = evo.population[networkIndex].adjustment;
+            if (evo.population[networkIndex].adjustment < evo.minAdj) evo.minAdj = evo.population[networkIndex].adjustment;
+            networkIndex++;
+            lblgames.Content = networkIndex;
+            evolutionPoints = 0;
+            if (networkIndex == populationCount) // end of generation.
+            {
+                //adjustment normalize
+                //for (int i = 0; i < evo.population.Count; i++)
+                //{
+                //    evo.population[i].adjustment /= totalEvolutionPoints;
+                //    evo.population[i].adjustment *= 100;
+                //    if (evo.population[i].adjustment > evo.maxAdj) evo.maxAdj = evo.population[i].adjustment;
+                //    if (evo.population[i].adjustment < evo.minAdj) evo.minAdj = evo.population[i].adjustment;
+                //}
+                //totalEvolutionPoints = 0;
+                if (generations-- == 0)
+                {
+                    generations = 100;
+                    mediumspeed.IsChecked = true;
+                }
+                lblctrl.Content = "gen. left: " + generations;
+
+                networkIndex = 0;
+
+                if (!evo.reprSelector())
+                {
+                    MessageBox.Show("repr loop");
+                }
+                evo.reproduce();
+                if (!evo.Death())
+                {
+                    MessageBox.Show("death loop");
+                }
+                evo.toReproduction.Clear();
+            }
+
+            // train with other direction than one that got us killed.
+
+            //var index = findDecision();
+
+            //Matrix newTarget = new Matrix(3, 1);
+            //for (int i = 0; i < 3; i++)
+            //{
+            //    newTarget[i, 0] = inputsList[index][i, 0];
+            //}
+            //newTarget += targetsList[index];
+            //for (int k = 0; k < 3; k++)
+            //{
+            //    if (newTarget[k, 0] == 0) newTarget[k, 0] = 1;
+            //    else newTarget[k, 0] = 0;
+            //}
+
+            //for (int i = 0; i < 3; i++)
+            //    neuralNetwork.train(inputsList[index], newTarget);
+            //inputsList.Clear();
+            // targetsList.Clear();
+
             timer.IsEnabled = false;
             if (true)//MessageBox.Show("Wanna try again?", "Game Over!", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
@@ -660,10 +726,10 @@ namespace Snake2
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            lblctrl.Content = decisionCount/gamesCounter;
+            //lblctrl.Content = decisionCount / gamesCounter;
             totalPoints += points;
             points = 0;
-            lblgames.Content = "Games: " + gamesCounter;
+            // lblgames.Content = "Games: " + gamesCounter;
             lblaverage.Content = "Average: " + Math.Round(totalPoints / gamesCounter, 1);
             timer.Interval = new TimeSpan(0, 0, 0, 0, speed);
             timer.IsEnabled = true;
@@ -712,7 +778,6 @@ namespace Snake2
             slow.IsChecked = false;
             mediumspeed.IsChecked = false;
             timer.Interval = new TimeSpan(0, 0, 0, 0, speed);
-
         }
         private double calcAngle(double x1, double y1, double x2, double y2)
         {
@@ -723,7 +788,13 @@ namespace Snake2
 
         private void Loaded_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            neuralNetwork.saveWeights();
+           // neuralNetwork.saveWeights();
+            for (int i = 0; i < evo.population.Count; i++)
+            {
+                var dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)
+                    + @"\weights" + i + @"\";
+                evo.population[i].saveWeights(dir);
+            }
         }
     }
 }
