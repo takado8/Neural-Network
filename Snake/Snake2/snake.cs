@@ -11,13 +11,12 @@ namespace Snake2
     class snake
     {
         public List<segment> segments = new List<segment>();
-        int len = 0;
-
+        public segment.dir nextDir = segment.dir.down;
         public snake()
         {
             //make head
             segment sg = new segment();
-            segment sg2 = new segment(50.0, 40.0,false);
+            segment sg2 = new segment(50.0, 40.0, false);
             segments.Add(sg);
             segments.Add(sg2);
         }
@@ -33,7 +32,7 @@ namespace Snake2
             }
         }
         public class segment
-        { 
+        {
             public Rectangle rec = new Rectangle();
             public int size = 10;
             public enum dir
@@ -46,10 +45,10 @@ namespace Snake2
             public dir Direction;
 
             public segment(double start_left = 50.0, double start_point_top = 50.0, bool black = true)
-            { 
+            {
                 rec.Height = size;
                 rec.Width = size;
-                if(black) rec.Fill = Brushes.Black;
+                if (black) rec.Fill = Brushes.Black;
                 else rec.Fill = (Brush)(new BrushConverter().ConvertFrom("#222222"));
                 rec.SetValue(Canvas.TopProperty, start_point_top);
                 rec.SetValue(Canvas.LeftProperty, start_left);

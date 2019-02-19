@@ -14,9 +14,12 @@ namespace Snake2
         public List<NeuralNetwork> population = new List<NeuralNetwork>();
         public List<int> toReproduction = new List<int>();
         static Random rand = new Random();
-
-        public Evolution(int pop_count)
+        int netInp, netHid, netOut;
+        public Evolution(int pop_count, int netInp, int netHid, int netOut)
         {
+            this.netInp = netInp;
+            this.netHid = netHid;
+            this.netOut = netOut;
             populationCount = pop_count;
             generate_pop();
         }
@@ -25,34 +28,39 @@ namespace Snake2
         {
             for (int i = 0; i < populationCount; i++)
             {
-                NeuralNetwork nn = new NeuralNetwork(4, 128, 3);
+                NeuralNetwork nn = new NeuralNetwork(netInp, netHid, netOut);
                 population.Add(nn);
             }
         }
-    
+
         public bool reprSelector()
         {
             int i = 0;
             int breakLoop = 0;
             population.Sort((p, q) => q.adjustment.CompareTo(p.adjustment)); // sort in descending order
-            toReproduction.Add(0); // best 3 to reproduction always
-            toReproduction.Add(1); 
+            toReproduction.Add(0); // best 5 to reproduction always
+            toReproduction.Add(1);
             toReproduction.Add(2);
             toReproduction.Add(3);
             toReproduction.Add(4);
-            
+
             while (toReproduction.Count < populationCount / 2)
             {
                 i = rand.Next(0, population.Count);
-                if (population[i].adjustment >= rand.Next((int)minAdj, (int)maxAdj))
+                //if (population[i].adjustment >= rand.Next((int)minAdj, (int)maxAdj))
+                //{
+                //    toReproduction.Add(i);
+                //    breakLoop = 0;
+                //}
+                if (rand.Next(100) < (int)(population[i].adjustment * 100)) // szansa na rozmnazanie wg wsp. rozmnazania.
                 {
                     toReproduction.Add(i);
                     breakLoop = 0;
                 }
-                else if (breakLoop++ > 10000)
-                {
-                    return false;
-                }
+                //else if (breakLoop++ > 10000)
+                //{
+                //    return false;
+                //}
             }
             return true;
         }
@@ -70,8 +78,8 @@ namespace Snake2
                 var B_chromosomeBh = population[i + 1].bias_h;
                 var B_chromosomeBo = population[i + 1].bias_o;
 
-                NeuralNetwork child1 = new NeuralNetwork(4, 128, 3);
-                NeuralNetwork child2 = new NeuralNetwork(4, 128, 3);
+                NeuralNetwork child1 = new NeuralNetwork(netInp, netHid, netOut);
+                NeuralNetwork child2 = new NeuralNetwork(netInp, netHid, netOut);
 
                 var chrW1 = crossingOver(A_chromosomeW1, B_chromosomeW1);
                 var chrW2 = crossingOver(A_chromosomeW2, B_chromosomeW2);
@@ -138,8 +146,8 @@ namespace Snake2
                     c++;
                 }
             }
-            // mutation 0.1% chance
-            if (rand.Next(1001) == 7)
+            // mutation 0.5% chance
+            if (rand.Next(501) == 7)
             {
                 switch (rand.Next(4))
                 {
@@ -181,15 +189,20 @@ namespace Snake2
             {
                 i = rand.Next(5, populationCount); // top 5 immortal
 
-                if (population[i].adjustment <= rand.Next(((int)minAdj), (int)maxAdj))
+                //if (population[i].adjustment <= rand.Next(((int)minAdj), (int)maxAdj))
+                //{
+                //    population.RemoveAt(i);
+                //    breakLoop = 0;
+                //}
+                if (rand.Next(100) > (int)(population[i].adjustment * 100)) // szansa na rozmnazanie wg wsp. rozmnazania.
                 {
                     population.RemoveAt(i);
                     breakLoop = 0;
                 }
-                else if (breakLoop++ > 10000)
-                {
-                    return false;
-                }
+                //else if (breakLoop++ > 10000)
+                //{
+                //    return false;
+                //}
             }
             return true;
         }
