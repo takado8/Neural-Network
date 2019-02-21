@@ -68,10 +68,11 @@ namespace DigitReco
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    // TrainOnMyDataset(false);
+                     TrainOnMyDataset(false);
                     Console.WriteLine("\nEnd of " + (i + 1) + " loop.");
                 }
                 TrainOnMyDataset(true);
+                //MNIST_test();
             }
             // Hide console and show window
             //  ShowWindow(handle, SW_HIDE);
