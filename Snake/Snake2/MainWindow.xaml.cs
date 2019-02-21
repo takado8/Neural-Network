@@ -31,8 +31,8 @@ namespace Snake2
         double totalPoints = 0;
         double gamesCounter = 0;
         List<double> allPoints = new List<double>();
-        int maxTop = 200; //bottom end of map
-        int maxLeft = 200; //right end of map
+        int maxTop = 100; //bottom end of map
+        int maxLeft = 100; //right end of map
         DispatcherTimer timer = new DispatcherTimer();
         // keys to control snake, wsad or arrows.
         Key up;
@@ -57,22 +57,22 @@ namespace Snake2
         int botIndex = 0;
         const int populationCount = 40;
 
-        int pointsTreshold1 = 50;
-        int pointsTreshold2 = 60;
-        int fedGoodDelta1 = 20;
-        int fedGoodDelta2 = 5;
-        int fedGoodDelta3 = 30;//snake.segments.Count;
-        int fedGoodDelta4 = 20;
+        int pointsTreshold1 = 30;
+        int pointsTreshold2 = 40;
+        int fedGoodDelta1 = 33;
+        int fedGoodDelta2 = 41;
+        int fedGoodDelta3 = 20;//snake.segments.Count;
+        int fedGoodDelta4 = 35;
         int foodExpiration = 120;
         int howDeep1 = 60;
         int howDeep2 = 40;
-        int howDeep3 = 30;
+        int howDeep3 = 20;
         int howDeep4 = 15;
-        int howDeep5 = 5;
+        int howDeep5 = 7;
         int howDeep6 = 3;
         double fedGood = 0;
-        double angleNegative = -0.18;
-        double anglePositive = 0.18;
+        double angleNegative = 0.0668;
+        double anglePositive = -0.26;
 
         public MainWindow()
         {
@@ -112,7 +112,7 @@ namespace Snake2
             //    if (!evo.population[i].readWeights(dir)) break;
             //}
             //neuralNetwork.readWeights();
-            botEvo.readPopulation();
+            //  botEvo.readPopulation();
             wsad.IsChecked = true;
             mediumspeed.IsChecked = true;
             timer.Tick += Timer_Tick;
@@ -129,32 +129,31 @@ namespace Snake2
             {
                 gameover();
             }
-            var sntop = double.Parse(snake.segments[0].rec.GetValue(Canvas.TopProperty).ToString());
-            var snleft = double.Parse(snake.segments[0].rec.GetValue(Canvas.LeftProperty).ToString());
-            var foodtop = double.Parse(food.GetValue(Canvas.TopProperty).ToString());
-            var foodleft = double.Parse(food.GetValue(Canvas.LeftProperty).ToString());
-            var foodDist = GetDistance(snleft, sntop, foodleft, foodtop);
-            if (foodDist < prevFoodDist)
-            {
-                evolutionPoints++;
-            }
-            else
-            {
-                evolutionPoints -= 2;
-                if (evolutionPoints < -10)
-                {
-                    // evolutionPoints -= 100;
-                    gameover();
-                }
-            }
-            prevFoodDist = foodDist;
-
+            //var sntop = double.Parse(snake.segments[0].rec.GetValue(Canvas.TopProperty).ToString());
+            //var snleft = double.Parse(snake.segments[0].rec.GetValue(Canvas.LeftProperty).ToString());
+            //var foodtop = double.Parse(food.GetValue(Canvas.TopProperty).ToString());
+            //var foodleft = double.Parse(food.GetValue(Canvas.LeftProperty).ToString());
+            //var foodDist = GetDistance(snleft, sntop, foodleft, foodtop);
+            //if (foodDist < prevFoodDist)
+            //{
+            //    evolutionPoints++;
+            //}
+            //else
+            //{
+            //    evolutionPoints -= 2;
+            //    if (evolutionPoints < -10)
+            //    {
+            //        // evolutionPoints -= 100;
+            //        gameover();
+            //    }
+            //}
+            //prevFoodDist = foodDist;
 
             if (foodCollision(snake[0].rec))
             {
                 points++;
 
-                // lblScore.Content = "Score: " + points;
+                lblScore.Content = "Score: " + points;
                 if (points < pointsTreshold1)
                     fedGood += fedGoodDelta1;
                 else fedGood += fedGoodDelta2;
@@ -175,6 +174,7 @@ namespace Snake2
                 snake.segments.Add(sg);
                 canv.Children.Add(snake[snake.segments.Count - 1].rec);
             }
+
             int way = botAnswer(snake, food);
             int next = deepExplore(way);
             if (next == 0)
@@ -305,7 +305,7 @@ namespace Snake2
             }
             return way;
         }
-        void makeMove(snake snake)
+        void makeMove(snake snake, bool imaginary = false)
         {
             // nex dir for each segment
             for (int i = snake.segments.Count - 1; i > 0; i--)
@@ -323,22 +323,22 @@ namespace Snake2
 
                 if (snake[i].Direction == snake.segment.dir.up)
                 {
-                    if (i == 0 && top <= 0) gameover();
+                    if (i == 0 && top < 0) { if (!imaginary) gameover(); }
                     else snake[i].rec.SetValue(Canvas.TopProperty, top - step);
                 }
                 else if (snake.segments[i].Direction == snake.segment.dir.down)
                 {
-                    if (i == 0 && (top > maxTop - snake[0].size - step)) gameover();
+                    if (i == 0 && (top == maxTop)) { if (!imaginary) gameover(); }
                     else snake[i].rec.SetValue(Canvas.TopProperty, top + step);
                 }
                 else if (snake[i].Direction == snake.segment.dir.left)
                 {
-                    if (i == 0 && left < step) gameover();
+                    if (i == 0 && left < 0) { if (!imaginary) gameover(); }
                     else snake[i].rec.SetValue(Canvas.LeftProperty, left - step);
                 }
                 else if (snake[i].Direction == snake.segment.dir.right)
                 {
-                    if (i == 0 && (left > maxLeft - snake[0].size - step)) gameover();
+                    if (i == 0 && (left == maxLeft)) { if (!imaginary) gameover(); }
                     else snake[i].rec.SetValue(Canvas.LeftProperty, left + step);
                 }
             }
@@ -391,8 +391,8 @@ namespace Snake2
             Canvas.SetLeft(imaginaryFood, Canvas.GetLeft(food));
             //make map
             Canvas canvo = new Canvas();
-            canvo.Height = 200;
-            canvo.Width = 200;
+            canvo.Height = canv.Height;
+            canvo.Width = canv.Width;
 
             canvo.Children.Add(imaginaryFood);
             foreach (var segment in imaginarySnake.segments)
@@ -401,12 +401,12 @@ namespace Snake2
             }
             // first step        
             botDrives(imaginarySnake, firstWay);
-            makeMove(imaginarySnake);
+            makeMove(imaginarySnake, true);
             for (int i = 0; i < howDeep; i++)
             {
                 int way = botAnswer(imaginarySnake, imaginaryFood);
                 botDrives(imaginarySnake, way);
-                makeMove(imaginarySnake);
+                makeMove(imaginarySnake, true);
                 if (selfCollision(imaginarySnake, Canvas.GetLeft(imaginarySnake[0].rec), Canvas.GetTop(imaginarySnake[0].rec)))
                 {
                     if (points < pointsTreshold2) fedGood = fedGoodDelta3; //* 1.5;//60;
@@ -416,6 +416,7 @@ namespace Snake2
             }
             return true;
         }
+
         void botDrives(snake snake, int way)
         {
             if (way == -1) // go left
@@ -512,11 +513,14 @@ namespace Snake2
                 rect2y = Canvas.GetTop(snake.segments[i].rec);
                 if (rect1x == rect2x && rect1y == rect2y)
                 {
+                    //snake.segments[i].rec.Fill = Brushes.IndianRed;
+                    //MessageBox.Show("segment " + i);
                     return true;
                 }
             }
             return false;
         }
+
         bool selfCollision(snake snake, double x, double y)
         {
             double rect2x;
@@ -573,22 +577,22 @@ namespace Snake2
 
             if (snake[0].Direction == snake.segment.dir.up)
             {
-                if (sntop - (howFar * 10) <= 0) return 1;
+                if (sntop - (howFar * 10) < 0) return 1;
                 if (selfCollision(snake, snleft, sntop - (howFar * 10))) return 1;
             }
             else if (snake[0].Direction == snake.segment.dir.down)
             {
-                if (sntop + 10 + (howFar * 10) >= 200) return 1;
+                if (sntop + (howFar * 10) >= maxTop) return 1;
                 if (selfCollision(snake, snleft, sntop + (howFar * 10))) return 1;
             }
             else if (snake[0].Direction == snake.segment.dir.left)
             {
-                if (snleft - (howFar * 10) <= 0) return 1;
+                if (snleft - (howFar * 10) < 0) return 1;
                 if (selfCollision(snake, snleft - (howFar * 10), sntop)) return 1;
             }
             else if (snake[0].Direction == snake.segment.dir.right)
             {
-                if (snleft + 10 + (howFar * 10) >= 200) return 1;
+                if (snleft + (howFar * 10) >= maxLeft) return 1;
                 if (selfCollision(snake, snleft + (howFar * 10), sntop)) return 1;
             }
             return 0;
@@ -606,12 +610,12 @@ namespace Snake2
             }
             else if (snake[0].Direction == snake.segment.dir.down)
             {
-                if (snleft + 10 + (howFar * 10) >= 200) return 1;
+                if (snleft + 10 + (howFar * 10) >= maxLeft) return 1;
                 if (selfCollision(snake, snleft + (howFar * 10), sntop)) return 1;
             }
             else if (snake[0].Direction == snake.segment.dir.left)
             {
-                if (sntop + 10 + (howFar * 10) >= 200) return 1;
+                if (sntop + 10 + (howFar * 10) >= maxTop) return 1;
                 if (selfCollision(snake, snleft, sntop + (howFar * 10))) return 1;
             }
             else if (snake[0].Direction == snake.segment.dir.right)
@@ -629,7 +633,7 @@ namespace Snake2
 
             if (snake[0].Direction == snake.segment.dir.up)
             {
-                if (snleft + 10 + (howFar * 10) >= 200) return 1;
+                if (snleft + 10 + (howFar * 10) >= maxLeft) return 1;
                 if (selfCollision(snake, snleft + (howFar * 10), sntop)) return 1;
             }
             else if (snake[0].Direction == snake.segment.dir.down)
@@ -644,13 +648,11 @@ namespace Snake2
             }
             else if (snake[0].Direction == snake.segment.dir.right)
             {
-                if (sntop + 10 + (howFar * 10) >= 200) return 1;
+                if (sntop + 10 + (howFar * 10) >= maxTop) return 1;
                 if (selfCollision(snake, snleft, sntop + (howFar * 10))) return 1;
             }
             return 0;
         }
-
-
 
         bool selfCollision2(double x, double y)
         {
@@ -665,8 +667,6 @@ namespace Snake2
             }
             return false;
         }
-
-
 
         int findDecision()
         {
@@ -709,16 +709,16 @@ namespace Snake2
             inputsList.Clear();
             targetsList.Clear();
         }
-
+        int counter = 0;
         void gameover()
         {
             gamesCounter++;
             timer.IsEnabled = false;
-            if (points > maxOfGeneration)
-            {
-                maxOfGeneration = points;
-                lblScore.Content = "Top of generation: " + maxOfGeneration;
-            }
+            //if (points > maxOfGeneration)
+            //{
+            //    maxOfGeneration = points;
+            //    lblScore.Content = "Top of generation: " + maxOfGeneration;
+            //}
             //allPoints.Add(points);
             //allPoints.Sort((p, q) => q.CompareTo(p));
             //double sum = 0;
@@ -735,53 +735,60 @@ namespace Snake2
                 hihgpoints = points;
                 lblTopScore.Content = "Top Score: " + hihgpoints;
             }
-              totalPoints += points;
+            totalPoints += points;
 
-            botEvo.population[botIndex].adjustment = evolutionPoints * 2;
-            botIndex++;
+         //   botEvo.population[botIndex].adjustment += points; //evolutionPoints * 2;
 
-            totalEvolutionPoints += evolutionPoints * 2;
+            // totalEvolutionPoints += evolutionPoints * 2;
             points = 0;
-
-            lblaverage.Content = "Average: " + Math.Round((totalPoints) / botIndex, 2);
-
-            // adjustment 
-            //  evolutionPoints *= 2;
-            //evo.population[networkIndex].adjustment = evolutionPoints;
-            //  if (evo.population[networkIndex].adjustment > evo.maxAdj) evo.maxAdj = evo.population[networkIndex].adjustment;
-            //   if (evo.population[networkIndex].adjustment < evo.minAdj) evo.minAdj = evo.population[networkIndex].adjustment;
-            //networkIndex++;
-            lblgames.Content = "Game : " + botIndex;
-            evolutionPoints = 0;
-            if (botIndex == populationCount) // end of generation.
-            {
-                totalPoints = 0;
-                maxOfGeneration = 0;
-                //adjustment normalize
-                for (int i = 0; i < botEvo.population.Count; i++)
-                {
-                    botEvo.population[i].adjustment /= totalEvolutionPoints;
-                    if (botEvo.population[i].adjustment > botEvo.maxAdj) botEvo.maxAdj = botEvo.population[i].adjustment;
-                    if (botEvo.population[i].adjustment < botEvo.minAdj) botEvo.minAdj = botEvo.population[i].adjustment;
-                }
-                totalEvolutionPoints = 0;
-                lblctrl.Content = "generation: " + (generationCounter++);
-                //networkIndex = 0;
-                botIndex = 0;
-                // select subjects to reproduce
-                if (!botEvo.reprSelector())
-                {
-                    MessageBox.Show("repr loop");
-                }
-                botEvo.reproduce();
-                // death selector
-                if (!botEvo.Death())
-                {
-                    MessageBox.Show("death loop");
-                }
-                botEvo.toReproduction.Clear();
-            }
-
+            lblgamenr.Content = "game nr: " + gamesCounter;//(counter + 2);
+            lblaverage.Content = "Average of current: " + Math.Round(totalPoints / gamesCounter,1); //botEvo.population[botIndex].adjustment / (counter + 1), 2);
+            //if (++counter == 10)
+            //{
+            //    botEvo.population[botIndex].adjustment /= 10;
+            //    botIndex++;
+            //    counter = 0;
+                //lblgamenr.Content = "game nr: 1";
+                // adjustment 
+                //  evolutionPoints *= 2;
+                //evo.population[networkIndex].adjustment = evolutionPoints;
+                //  if (evo.population[networkIndex].adjustment > evo.maxAdj) evo.maxAdj = evo.population[networkIndex].adjustment;
+                //   if (evo.population[networkIndex].adjustment < evo.minAdj) evo.minAdj = evo.population[networkIndex].adjustment;
+                //networkIndex++;
+                //lblgames.Content = "Bot nr: " + botIndex;
+                ////evolutionPoints = 0;
+                //if (botIndex == populationCount) // end of generation.
+                //{
+                //    MessageBox.Show("Test finished");
+                //    this.Close();
+                //}
+                //    totalPoints = 0;
+                //    maxOfGeneration = 0;
+                //    //adjustment normalize
+                //    for (int i = 0; i < botEvo.population.Count; i++)
+                //    {
+                //        botEvo.population[i].adjustment /= totalEvolutionPoints;
+                //        if (botEvo.population[i].adjustment > botEvo.maxAdj) botEvo.maxAdj = botEvo.population[i].adjustment;
+                //        if (botEvo.population[i].adjustment < botEvo.minAdj) botEvo.minAdj = botEvo.population[i].adjustment;
+                //    }
+                //    totalEvolutionPoints = 0;
+                //    lblctrl.Content = "generation: " + (generationCounter++);
+                //    //networkIndex = 0;
+                //    botIndex = 0;
+                //    // select subjects to reproduce
+                //    if (!botEvo.reprSelector())
+                //    {
+                //        MessageBox.Show("repr loop");
+                //    }
+                //    botEvo.reproduce();
+                //    // death selector
+                //    if (!botEvo.Death())
+                //    {
+                //        MessageBox.Show("death loop");
+                //    }
+                //    botEvo.toReproduction.Clear();
+                //}
+           // }
             if (true)//MessageBox.Show("Wanna try again?", "Game Over!", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 //remove snake
@@ -810,30 +817,30 @@ namespace Snake2
         {
             foodExpire = 0;// infinite loop breaker;
             canv.Children.Remove(food);
-            food.SetValue(Canvas.TopProperty, (double)rand.Next(10, maxTop - 40));
-            food.SetValue(Canvas.LeftProperty, (double)rand.Next(10, maxLeft - 40));
+            food.SetValue(Canvas.TopProperty, (double)rand.Next(10, maxTop - 10));
+            food.SetValue(Canvas.LeftProperty, (double)rand.Next(10, maxLeft - 10));
             canv.Children.Add(food);
         }
 
         private void Button_Start_Click(object sender, RoutedEventArgs e)
         {
             // load next bot parameters
-            pointsTreshold1 = (int)botEvo.population[botIndex][0];
-            pointsTreshold2 = (int)botEvo.population[botIndex][1];
-            fedGoodDelta1 = (int)botEvo.population[botIndex][2];
-            fedGoodDelta2 = (int)botEvo.population[botIndex][3];
-            fedGoodDelta3 = (int)botEvo.population[botIndex][4];
-            fedGoodDelta4 = (int)botEvo.population[botIndex][5];
-            //foodExpiration = (int)botEvo.population[botIndex][6];
-            howDeep1 = (int)botEvo.population[botIndex][7];
-            howDeep2 = (int)botEvo.population[botIndex][8];
-            howDeep3 = (int)botEvo.population[botIndex][9];
-            howDeep4 = (int)botEvo.population[botIndex][10];
-            howDeep5 = (int)botEvo.population[botIndex][11];
-            howDeep6 = (int)botEvo.population[botIndex][12];
-            fedGood = (int)botEvo.population[botIndex][13];
-            angleNegative = botEvo.population[botIndex][14];
-            anglePositive = botEvo.population[botIndex][15];
+            // pointsTreshold1 = (int)botEvo.population[botIndex][0];
+            // pointsTreshold2 = (int)botEvo.population[botIndex][1];
+            // fedGoodDelta1 = (int)botEvo.population[botIndex][2];
+            // fedGoodDelta2 = (int)botEvo.population[botIndex][3];
+            // fedGoodDelta3 = (int)botEvo.population[botIndex][4];
+            // fedGoodDelta4 = (int)botEvo.population[botIndex][5];
+            // //foodExpiration = (int)botEvo.population[botIndex][6];
+            // howDeep1 = (int)botEvo.population[botIndex][7];
+            // howDeep2 = (int)botEvo.population[botIndex][8];
+            // howDeep3 = (int)botEvo.population[botIndex][9];
+            // howDeep4 = (int)botEvo.population[botIndex][10];
+            // howDeep5 = (int)botEvo.population[botIndex][11];
+            // howDeep6 = (int)botEvo.population[botIndex][12];
+            //// fedGood = (int)botEvo.population[botIndex][13];
+            // angleNegative = botEvo.population[botIndex][14];
+            // anglePositive = botEvo.population[botIndex][15];
 
             timer.Interval = new TimeSpan(0, 0, 0, 0, speed);
             timer.IsEnabled = true;
@@ -890,7 +897,7 @@ namespace Snake2
             //        + @"\weights" + i + @"\";
             //    evo.population[i].saveWeights(dir);
             //}
-            botEvo.savePopulation();
+            // botEvo.savePopulation();
         }
     }
 }

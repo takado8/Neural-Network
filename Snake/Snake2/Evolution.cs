@@ -11,10 +11,13 @@ namespace Snake2
         public int populationCount;
         public double minAdj = Double.MaxValue;
         public double maxAdj = Double.MinValue;
+
         public List<NeuralNetwork> population = new List<NeuralNetwork>();
         public List<int> toReproduction = new List<int>();
+
         static Random rand = new Random();
         int netInp, netHid, netOut;
+
         public Evolution(int pop_count, int netInp, int netHid, int netOut)
         {
             this.netInp = netInp;
@@ -206,6 +209,5 @@ namespace Snake2
             }
             return true;
         }
-
     }
 }

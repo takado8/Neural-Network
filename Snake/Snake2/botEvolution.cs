@@ -158,7 +158,7 @@ namespace Snake2
             if (!Directory.Exists("botEvo")) Directory.CreateDirectory("botEvo");
             for (int i = 0; i < population.Count; i++)
             {
-                File.WriteAllLines(@"botEvo\" + i + ".txt", population[i].chromosome.Select(x => x.ToString()).ToArray());
+                File.WriteAllLines(@"botEvo\" +population[i].adjustment+"_"+ i +".txt", population[i].chromosome.Select(x => x.ToString()).ToArray());
             }
         }
 
