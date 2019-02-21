@@ -22,7 +22,7 @@ using System.Diagnostics;
 
 namespace DigitReco
 {
-    // Master branch
+    // Master branch working multilayer version
 
     public partial class MainWindow : Window
     {
@@ -68,7 +68,7 @@ namespace DigitReco
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    TrainOnMyDataset(false);
+                    // TrainOnMyDataset(false);
                     Console.WriteLine("\nEnd of " + (i + 1) + " loop.");
                 }
                 TrainOnMyDataset(true);
