@@ -41,7 +41,7 @@ namespace Snake2
         Key right;
         snake snake = new snake();
         // snake.segment.dir nextDir;
-        NeuralNetwork neuralNetwork = new NeuralNetwork(5, 1024, 3);
+        NeuralNetwork neuralNetwork = new NeuralNetwork(6, 1024, 3);
         //Evolution evo = new Evolution(populationCount, 7, 128, 3);
 
         List<Matrix> inputsList = new List<Matrix>();
@@ -57,12 +57,8 @@ namespace Snake2
         int botIndex = 0;
         const int populationCount = 40;
 
-        int pointsTreshold1 = 30;
-        int pointsTreshold2 = 40;
-        int fedGoodDelta1 = 33;
-        int fedGoodDelta2 = 41;
-        int fedGoodDelta3 = 20;//snake.segments.Count;
-        int fedGoodDelta4 = 35;
+       
+        int fedGoodDelta = 35;       
         int foodExpiration = 120;
         int howDeep1 = 60;
         int howDeep2 = 40;
@@ -111,7 +107,7 @@ namespace Snake2
             //        + @"\weights" + i + @"\";
             //    if (!evo.population[i].readWeights(dir)) break;
             //}
-            //neuralNetwork.readWeights();
+            neuralNetwork.readWeights();
             //  botEvo.readPopulation();
             wsad.IsChecked = true;
             mediumspeed.IsChecked = true;
@@ -149,34 +145,26 @@ namespace Snake2
             //}
             //prevFoodDist = foodDist;
 
-            if (foodCollision(snake[0].rec))
+            if (foodCollision(snake[0].rec, food))
             {
                 points++;
 
                 lblScore.Content = "Score: " + points;
-                if (points < pointsTreshold1)
-                    fedGood += fedGoodDelta1;
-                else fedGood += fedGoodDelta2;
+                AddSegment(snake, canv);
+                fedGood = fedGoodDelta;
+              
                 // else fedGood += 5;
                 evolutionPoints += 100;
                 throwFood();
-                var top = double.Parse(snake[snake.segments.Count - 1].rec.GetValue(Canvas.TopProperty).ToString());
-                var left = double.Parse(snake[snake.segments.Count - 1].rec.GetValue(Canvas.LeftProperty).ToString());
-
-                switch (snake[snake.segments.Count - 1].Direction)
-                {
-                    case snake.segment.dir.up: top += 10; break;
-                    case snake.segment.dir.down: top -= 10; break;
-                    case snake.segment.dir.left: left += 10; break;
-                    case snake.segment.dir.right: left -= 10; break;
-                }
-                snake.segment sg = new snake.segment(top, left, snake[snake.segments.Count - 1].Direction);
-                snake.segments.Add(sg);
-                canv.Children.Add(snake[snake.segments.Count - 1].rec);
+                
             }
+            var networkInput = makeInput(snake,food, fedGood, points);
+            var networkAnswer = neuralNetwork.get_answer(networkInput);
+            int way = networkDrives2(networkAnswer, snake);
 
-            int way = botAnswer(snake, food);
-            int next = deepExplore(way);
+
+             // botAnswer(snake, food);
+            int next = deepExplore(way, false);
             if (next == 0)
             {
                 if (lookahead(snake) == 1)
@@ -210,21 +198,20 @@ namespace Snake2
                     else next = -1;
                 }
             }
-            botDrives(snake, next);
-            // lblspeed.Content = lookahead(1) + " " + lookleft(1) + " " + lookright(1);
-            //  var networkInput = makeInput();
-            //  var target = makeTarget(way);
+            directionTranslate(snake, next);
+          //  var networkInput = makeInput(snake,food, fedGood, points);
+          //   var target = makeTarget(way);
 
-            //   neuralNetwork.train(networkInput, target);
+             //  neuralNetwork.train(networkInput, target);
             //  evo.population[networkIndex].train(networkInput, target);
             //  var networkAnswer = evo.population[networkIndex].get_answer(networkInput);
 
-            //  var networkAnswer = neuralNetwork.get_answer(networkInput);
-            //networkDrives(networkAnswer);
+             // var networkAnswer = neuralNetwork.get_answer(networkInput);
+             // networkDrives(networkAnswer,snake);
 
             if (foodExpire++ > foodExpiration)
             {
-                //food was not taken in 80 steps, relocate
+                //food was not taken in f steps, relocate
                 throwFood();
             }
             //  }
@@ -232,24 +219,42 @@ namespace Snake2
             makeMove(snake);
             fedGood--;
         }
-        int deepExplore(int way)
+
+        void AddSegment(snake snake, Canvas canv)
         {
-            int next = explore(way, howDeep1);
+            var top = double.Parse(snake[snake.segments.Count - 1].rec.GetValue(Canvas.TopProperty).ToString());
+            var left = double.Parse(snake[snake.segments.Count - 1].rec.GetValue(Canvas.LeftProperty).ToString());
+
+            switch (snake[snake.segments.Count - 1].Direction)
+            {
+                case snake.segment.dir.up: top += 10; break;
+                case snake.segment.dir.down: top -= 10; break;
+                case snake.segment.dir.left: left += 10; break;
+                case snake.segment.dir.right: left -= 10; break;
+            }
+            snake.segment sg = new snake.segment(top, left, snake[snake.segments.Count - 1].Direction);
+            snake.segments.Add(sg);
+            canv.Children.Add(snake[snake.segments.Count - 1].rec);
+        }
+
+        int deepExplore(int way, bool bot)
+        {
+            int next = explore(way, howDeep1,bot);
             if (next == 5)
             {
-                next = explore(way, howDeep2);
+                next = explore(way, howDeep2,bot);
                 if (next == 5)
                 {
-                    next = explore(way, howDeep3);
+                    next = explore(way, howDeep3, bot);
                     if (next == 5)
                     {
-                        next = explore(way, howDeep4);
+                        next = explore(way, howDeep4, bot);
                         if (next == 5)
                         {
-                            next = explore(way, howDeep5);
+                            next = explore(way, howDeep5, bot);
                             if (next == 5)
                             {
-                                next = explore(way, howDeep6);
+                                next = explore(way, howDeep6, bot);
                                 if (next == 5)
                                 {
                                     next = way;
@@ -262,43 +267,88 @@ namespace Snake2
             }
             return next;
         }
-        int explore(int way, int howDeep)
+        int explore(int way, int howDeep, bool bot)
         {
-            if (!botImagination(way, howDeep))
+            if (bot)
             {
-                if (way == 0)
+                if (!botImagination(way, howDeep))
                 {
-                    way = 1;
-                    if (!botImagination(way, howDeep))
+                    if (way == 0)
+                    {
+                        way = 1;
+                        if (!botImagination(way, howDeep))
+                        {
+                            way = -1;
+                            if (!botImagination(way, howDeep))
+                            {
+                                return 5;
+                            }
+                        }
+                    }
+                    else if (way == 1)
                     {
                         way = -1;
                         if (!botImagination(way, howDeep))
                         {
-                            return 5;
+                            way = 0;
+                            if (!botImagination(way, howDeep))
+                            {
+                                return 5;
+                            }
+                        }
+                    }
+                    else if (way == -1)
+                    {
+                        way = 1;
+                        if (!botImagination(way, howDeep))
+                        {
+                            way = 0;
+                            if (!botImagination(way, howDeep))
+                            {
+                                return 5;
+                            }
                         }
                     }
                 }
-                else if (way == 1)
+            }
+            else
+            {
+                if (!NetworkImagination(way, howDeep))
                 {
-                    way = -1;
-                    if (!botImagination(way, howDeep))
+                    if (way == 0)
                     {
-                        way = 0;
-                        if (!botImagination(way, howDeep))
+                        way = 1;
+                        if (!NetworkImagination(way, howDeep))
                         {
-                            return 5;
+                            way = -1;
+                            if (!NetworkImagination(way, howDeep))
+                            {
+                                return 5;
+                            }
                         }
                     }
-                }
-                else if (way == -1)
-                {
-                    way = 1;
-                    if (!botImagination(way, howDeep))
+                    else if (way == 1)
                     {
-                        way = 0;
-                        if (!botImagination(way, howDeep))
+                        way = -1;
+                        if (!NetworkImagination(way, howDeep))
                         {
-                            return 5;
+                            way = 0;
+                            if (!NetworkImagination(way, howDeep))
+                            {
+                                return 5;
+                            }
+                        }
+                    }
+                    else if (way == -1)
+                    {
+                        way = 1;
+                        if (!NetworkImagination(way, howDeep))
+                        {
+                            way = 0;
+                            if (!NetworkImagination(way, howDeep))
+                            {
+                                return 5;
+                            }
                         }
                     }
                 }
@@ -400,24 +450,73 @@ namespace Snake2
                 canvo.Children.Add(segment.rec);
             }
             // first step        
-            botDrives(imaginarySnake, firstWay);
+            directionTranslate(imaginarySnake, firstWay);
             makeMove(imaginarySnake, true);
             for (int i = 0; i < howDeep; i++)
             {
                 int way = botAnswer(imaginarySnake, imaginaryFood);
-                botDrives(imaginarySnake, way);
+                directionTranslate(imaginarySnake, way);
                 makeMove(imaginarySnake, true);
                 if (selfCollision(imaginarySnake, Canvas.GetLeft(imaginarySnake[0].rec), Canvas.GetTop(imaginarySnake[0].rec)))
                 {
-                    if (points < pointsTreshold2) fedGood = fedGoodDelta3; //* 1.5;//60;
-                    else fedGood = fedGoodDelta4; //* 1.5;//60;
+                    fedGood = fedGoodDelta;
                     return false;
                 }
             }
             return true;
         }
+        bool NetworkImagination(int firstWay, int howDeep)
+        {
+            // copy snake & food
+            snake imaginarySnake = new snake();// = snake;    
+            imaginarySnake.nextDir = snake.nextDir;
+            imaginarySnake.segments.Clear();
+            foreach (var segment in snake.segments)
+            {
+                var top = Canvas.GetTop(segment.rec);
+                var left = Canvas.GetLeft(segment.rec);
+                imaginarySnake.segments.Add(new snake.segment(top, left, segment.Direction));
+            }
+            Rectangle imaginaryFood = new Rectangle();//food;
+            Canvas.SetTop(imaginaryFood, Canvas.GetTop(food));
+            Canvas.SetLeft(imaginaryFood, Canvas.GetLeft(food));
+            //make map
+            Canvas canvo = new Canvas();
+            canvo.Height = canv.Height;
+            canvo.Width = canv.Width;
 
-        void botDrives(snake snake, int way)
+            canvo.Children.Add(imaginaryFood);
+            foreach (var segment in imaginarySnake.segments)
+            {
+                canvo.Children.Add(segment.rec);
+            }
+
+            // first step        
+
+            directionTranslate(snake, firstWay);
+            makeMove(imaginarySnake, true);
+            for (int i = 0; i < howDeep; i++)
+            {
+                var input = makeInput(imaginarySnake, imaginaryFood, fedGood, points);
+                var way = neuralNetwork.get_answer(input);
+                networkDrives(way, imaginarySnake);
+                makeMove(imaginarySnake, true);
+        
+                //if(foodCollision(imaginarySnake[0].rec,imaginaryFood))
+                //{
+                //    AddSegment(imaginarySnake, canvo);
+                //    p++;
+                //    fg = 30;
+                //}
+                if (selfCollision(imaginarySnake, Canvas.GetLeft(imaginarySnake[0].rec), Canvas.GetTop(imaginarySnake[0].rec)))
+                {
+                    //fedGood = fedGoodDelta;
+                    return false;
+                }
+            }
+            return true;
+        }
+        void directionTranslate(snake snake, int way)
         {
             if (way == -1) // go left
             {
@@ -459,7 +558,7 @@ namespace Snake2
             }
             //else don't change direction.
         }
-        void networkDrives(Matrix Networkanswer)
+        void networkDrives(Matrix Networkanswer, snake snake)
         {
             // find max 
             var max = Networkanswer[0, 0];
@@ -475,8 +574,29 @@ namespace Snake2
             switch (maxIndex)
             {
                 case 0: break; //don't change direction 
-                case 1: botDrives(snake, 1); break;  // go right
-                case 2: botDrives(snake, -1); break;
+                case 1: directionTranslate(snake, 1); break;  // go right
+                case 2: directionTranslate(snake, -1); break;
+            }
+        }
+        int networkDrives2(Matrix Networkanswer, snake snake)
+        {
+            // find max 
+            var max = Networkanswer[0, 0];
+            int maxIndex = 0;
+            for (int i = 0; i < Networkanswer.rows; i++)
+            {
+                if (Networkanswer[i, 0] > max)
+                {
+                    max = Networkanswer[i, 0];
+                    maxIndex = i;
+                }
+            }
+            switch (maxIndex)
+            {
+                case 0: return 0; //don't change direction 
+                case 1: return 1; //go right
+                case 2: return -1; //left
+                default: return 0;
             }
         }
         Matrix makeTarget(int way)
@@ -490,14 +610,16 @@ namespace Snake2
             }
             return mx;
         }
-        Matrix makeInput()
+
+        Matrix makeInput(snake snake, Rectangle food, double fedGood, double points)
         {
-            Matrix input = new Matrix(5, 1);
+            Matrix input = new Matrix(6, 1);
             input[0, 0] = lookahead(snake);
             input[1, 0] = lookright(snake);
             input[2, 0] = lookleft(snake);
             input[3, 0] = foodAngle(snake, food);
             input[4, 0] = fedGood / 30;
+            input[5, 0] = points / 100;
             return input;
         }
 
@@ -513,8 +635,6 @@ namespace Snake2
                 rect2y = Canvas.GetTop(snake.segments[i].rec);
                 if (rect1x == rect2x && rect1y == rect2y)
                 {
-                    //snake.segments[i].rec.Fill = Brushes.IndianRed;
-                    //MessageBox.Show("segment " + i);
                     return true;
                 }
             }
@@ -536,9 +656,9 @@ namespace Snake2
             }
             return false;
         }
-        bool foodCollision(Rectangle Rectangle1)
+        bool foodCollision(Rectangle snakeHead, Rectangle food)
         {
-            Rect rect1 = new Rect(Canvas.GetLeft(Rectangle1), Canvas.GetTop(Rectangle1), Rectangle1.Width, Rectangle1.Height);
+            Rect rect1 = new Rect(Canvas.GetLeft(snakeHead), Canvas.GetTop(snakeHead), snakeHead.Width, snakeHead.Height);
             Rect rect2 = new Rect(Canvas.GetLeft(food), Canvas.GetTop(food), food.Width, food.Height);
             if (rect1.IntersectsWith(rect2))
             {
@@ -890,7 +1010,7 @@ namespace Snake2
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            //neuralNetwork.saveWeights();
+            neuralNetwork.saveWeights();
             //for (int i = 0; i < evo.population.Count; i++)
             //{
             //    var dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)
