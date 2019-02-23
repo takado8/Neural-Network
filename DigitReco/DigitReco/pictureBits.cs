@@ -160,5 +160,21 @@ namespace DigitReco
                 return bitmapimage;
             }
         }
+        public static void saveImg(Matrix arrayImg, string path)
+        {
+            int width = 28;
+            int height = 28;
+            var bitmap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+
+            for (int y = 0; y < height; y++)
+                for (int x = 0; x < width; x++)
+                {
+                    int red = 255 - (int)(arrayImg[y, x] * 255);
+                    int green = 255 - (int)(arrayImg[y, x] * 255);
+                    int blue = 255 - (int)(arrayImg[y, x] * 255);
+                    bitmap.SetPixel(y, x, System.Drawing.Color.FromArgb(0, red, green, blue));
+                }
+            bitmap.Save(path);
+        }
     }
 }

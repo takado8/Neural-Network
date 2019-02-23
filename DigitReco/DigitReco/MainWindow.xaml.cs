@@ -22,7 +22,7 @@ using System.Diagnostics;
 
 namespace DigitReco
 {
-    // Master branch working multilayer version
+    // reversed digit reco branch.
 
     public partial class MainWindow : Window
     {
@@ -37,13 +37,8 @@ namespace DigitReco
         IntPtr handle = GetConsoleWindow();
         static Random random = new Random();
         #endregion
-        NeuralNetwork network = new NeuralNetwork(784, 300, 10);
-
-        double total = 0;
-        double total2 = 0;
-        double total3 = 0;
-        double correctCount = 0;
-
+        NeuralNetwork network = new NeuralNetwork(10, 300, 784);
+        
         public MainWindow()
         {
             // Show console
@@ -67,19 +62,86 @@ namespace DigitReco
             Process.Start(dir + @"\mnist.exe");
             using (WaitCursor wk = new WaitCursor())
             {
-               
-                     TrainOnMyDataset(false);
-                    Console.WriteLine("\nEnd of training, testing...");
-                
-                TrainOnMyDataset(true);
-                //MNIST_test();
+                //for (int i = 0; i < 10; i++)
+                //{
+                //    TrainOnMyDataset();
+                //    Console.WriteLine();
+                //}
+                trainOnMNIST(2);
+                Console.WriteLine("\nEnd of training, testing...");
+               // generate();
+
             }
             // Hide console and show window
-            //  ShowWindow(handle, SW_HIDE);
-            clear();
-            Show();
+            // ShowWindow(handle, SW_HIDE);
+            // clear();
+            // Show();
         }
 
+        /// <param name="n">training dataset size. If 0 - train on all data.</param>
+        void TrainOnMyDataset(int n=0)
+        {
+            int total = 0;
+            string dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            var files = Directory.GetFiles(dir + @"\savedData", "*.bmp", SearchOption.AllDirectories);
+            byte label;
+            Random r = new Random();
+            files = files.OrderBy(x => r.Next()).ToArray();
+            //foreach (var picture in files)
+            if (n == 0) n = files.Length;
+            for(int i=0; i< n; i++)
+            {
+                label = byte.Parse((System.IO.Path.GetFileName(files[i])[0]).ToString());
+                int[,] twoD = null;
+                try
+                {
+                    twoD = pictureBits.ImageTo2dIntArray(files[i]);
+                }
+                catch
+                {
+                    continue;
+                }
+                var oneD = pictureBits.image2dTo1d(twoD);
+                Matrix target = Matrix.InputfromArray(oneD.Select(x => (double)x).ToArray());
+                Matrix input = Matrix.TargetFromLabel(label);
+                network.train(input, target);
+                Console.Write("\r" + "Total: " + ++total);
+            }
+        }
+        void generate()
+        {
+            int x = 0;
+            while (Directory.Exists("generated" + x))
+            {
+                x++;
+            }
+            string dirPath = "generated" + x;
+            Directory.CreateDirectory(dirPath);
+            Matrix[] mx = new Matrix[10];
+            for (int i = 0; i < 10; i++)
+            {
+                mx[i] = new Matrix(10, 1);
+            }
+            for (int i = 0; i < 10; i++)
+            {
+                mx[i][i, 0] = 1;
+            }
+            for (int j = 0; j < 10; j++)
+            {
+                var output = network.get_answer(mx[j]);
+                var output2d = new Matrix(28, 28);
+                int counter = 0;
+                for (int i = 0; i < 28; i++)
+                    for (int k = 0; k < 28; k++)
+                    {
+                        output2d[k, i] = output[counter++, 0];
+                    }
+                pictureBits.saveImg(output2d,dirPath+ @"\" + j + RandomName() + ".bmp");
+            }
+            Console.WriteLine("Done.");
+            Console.ReadKey();
+            Close();
+        }
         void trainOnMNIST(int iterations)
         {
             string TrainingSetPath = "train-images-idx3-ubyte.gz";
@@ -90,7 +152,7 @@ namespace DigitReco
 
             for (int k = 0; k < iterations; k++)
             {
-                double correctCount = 0;
+//                double correctCount = 0;
                 double total = 0;
                 pictures.OrderBy(x => r.Next()).ToArray();
 
@@ -100,42 +162,36 @@ namespace DigitReco
                     {
                         Matrix input = Matrix.InputfromArray(pb.oneDimArr.Select(x => (double)x).ToArray());
                         Matrix target = Matrix.TargetFromLabel(pb.label);
-                        network.train(input, target);
-                        var output = network.get_answer(input);
+                        network.train(target, input);
+                        var output = network.get_answer(target);
 
                         //normalize output - find max
-                        double max = output[0, 0];
-                        int maxIndex = 0;
-                        for (int i = 0; i < output.rows; i++)
-                        {
-                            if (output[i, 0] > max)
-                            {
-                                max = output[i, 0];
-                                maxIndex = i;
-                            }
-                        }
-                        Matrix answer = new Matrix(output.rows, 1);
-                        answer[maxIndex, 0] = 1;
-
-                        if (answer == target)
-                        {
-                            correctCount++;
-                        }
-                        total++;
-                        progress.Content = "Total: " + total;
-                        double rate = ((correctCount / total) * 100.0);
-                        correct.Content = "Correct: " + correctCount;
-                        percent.Content = "Percent: " + Math.Round(rate, 2) + " %  ";
-                        Console.Write("\r" + progress.Content + "\t||\t" + correct.Content + "\t||\t" + percent.Content);
+                        //double max = output[0, 0];
+                        //int maxIndex = 0;
+                        //for (int i = 0; i < output.rows; i++)
+                        //{
+                        //    if (output[i, 0] > max)
+                        //    {
+                        //        max = output[i, 0];
+                        //        maxIndex = i;
+                        //    }
+                        //}
+                        //Matrix answer = new Matrix(output.rows, 1);
+                        //answer[maxIndex, 0] = 1;
+                        //if (answer == target)
+                        //{
+                        //    correctCount++;
+                        //}                
+                        Console.Write("\r" + ++total);
                     }
                     catch (Exception ex)
                     {
                         MessageBox.Show(ex.ToString());
                     }
                 }
+                generate();
             }
         }
-
         void MNIST_test()
         {
             int correctCount = 0;
@@ -177,87 +233,17 @@ namespace DigitReco
                 Console.Write("\r" + progress.Content + "\t||\t" + correct.Content + "\t||\t" + percent.Content);
             }
         }
-        void TrainOnMyDataset(bool OnlyTest)
-        {
-            // Console.Clear();
-            int correctCount = 0;
-            total3 = 0;
-            string dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            var files = Directory.GetFiles(dir + @"\savedData", "*.bmp", SearchOption.AllDirectories);
-            byte label;
-            Random r = new Random();
-
-            files = files.OrderBy(x => r.Next()).ToArray();
-            foreach (var picture in files)
-            {
-                label = byte.Parse((System.IO.Path.GetFileName(picture)[0]).ToString());
-
-                // Console.WriteLine(picture + "  "+ label);
-                int[,] twoD = null;
-                try
-                {
-                    twoD = pictureBits.ImageTo2dIntArray(picture);
-                }
-                catch (Exception ex)
-                {
-                    // MessageBox.Show(ex.ToString());
-                    continue;
-                }
-                var oneD = pictureBits.image2dTo1d(twoD);
-
-                Matrix input = Matrix.InputfromArray(oneD.Select(x => (double)x).ToArray());
-                //  input.print();
-                Matrix target = Matrix.TargetFromLabel(label);
-                // Console.WriteLine("target : ");
-                // target.print();
-                //Console.WriteLine(picture);
-
-                if (!OnlyTest)
-                {
-                    network.train(input, target);
-                }
-                //  Console.WriteLine("answer : ");          
-                var output = network.get_answer(input);
-
-                //normalize output - find max
-                double max = output[0, 0];
-                int maxIndex = 0;
-                for (int i = 0; i < output.rows; i++)
-                {
-                    if (output[i, 0] > max)
-                    {
-                        max = output[i, 0];
-                        maxIndex = i;
-                    }
-                }
-                Matrix answer = new Matrix(output.rows, 1);
-                answer[maxIndex, 0] = 1;
-
-                if (answer == target)
-                {
-                    correctCount++;
-                }
-                total3++;
-                //Console.Clear();
-                progress.Content = "Total: " + total3;
-                double rate = ((correctCount / total3) * 100.0);
-                correct.Content = "Correct: " + correctCount;
-                percent.Content = "Percent: " + Math.Round(rate, 2) + " %  ";
-                Console.Write("\r" + progress.Content + "\t||\t" + correct.Content + "\t||\t" + percent.Content);
-            }
-            //Console.WriteLine("\nEnd of training.");
-        }
 
         #region buttons
         void corr()
         {
-            correctCount++;
-            total++;
-            double rate = ((correctCount / total) * 100.0);
-            progress.Content = "Total: " + total;
+            //correctCount++;
+            //total++;
+            //double rate = ((correctCount / total) * 100.0);
+            //progress.Content = "Total: " + total;
 
-            correct.Content = "Correct: " + correctCount;
-            percent.Content = "Percent: " + (int)rate + " %";
+            //correct.Content = "Correct: " + correctCount;
+            //percent.Content = "Percent: " + (int)rate + " %";
             string dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             string fullDir = dir + @"\savedData\";
             if (Guesslbl.Content.ToString() == "-")
@@ -297,11 +283,11 @@ namespace DigitReco
 
         void incorrect()
         {
-            total++;
-            double rate = ((correctCount / total) * 100.0);
-            correct.Content = "Correct: " + correctCount;
-            percent.Content = "Percent: " + (int)rate + " %";
-            progress.Content = "Total: " + total;
+            // total++;
+            // double rate = ((correctCount / total) * 100.0);
+            // correct.Content = "Correct: " + correctCount;
+            //  percent.Content = "Percent: " + (int)rate + " %";
+            // progress.Content = "Total: " + total;
 
             if (Guesslbl.Content.ToString() == "-")
             {
@@ -350,12 +336,12 @@ namespace DigitReco
         bool justOnce = false;
         void reco()
         {
-            if (!justOnce)
-            {
-                correctCount = 0;
-                total = total2 = total3 = 0;
-                justOnce = true;
-            }
+            //if (!justOnce)
+            //{
+            //    correctCount = 0;
+            //    total = total2 = total3 = 0;
+            //    justOnce = true;
+            //}
             using (WaitCursor wk = new WaitCursor())
             {
                 string dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
@@ -576,7 +562,7 @@ namespace DigitReco
 
         private void Window_Closed(object sender, EventArgs e)
         {
-               network.saveWeights();
+            network.saveWeights();
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)

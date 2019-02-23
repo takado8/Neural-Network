@@ -90,7 +90,7 @@ namespace DigitReco
             {
                 for (int k = 0; k < columns; k++)
                 {
-                    Console.Write(array[i, k] + "\t");
+                    Console.Write(array[i, k]);// + "\t");
                 }
                 Console.WriteLine();
             }
