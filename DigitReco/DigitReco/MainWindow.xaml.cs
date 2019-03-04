@@ -47,37 +47,37 @@ namespace DigitReco
         public MainWindow()
         {
             // Show console
-            ShowWindow(handle, SW_SHOW);
+          //  ShowWindow(handle, SW_SHOW);
             InitializeComponent();
         }
         static Random r = new Random();
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Hide();
-            network.readWeights();
+            //Hide();
+           // network.readWeights();
             start();
         }
 
         void start()
         {
             string dir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            Hide();
+          //  Hide();
             //start python exe 
-            Process.Start(dir + @"\mnist.exe");
+           // Process.Start(dir + @"\mnist.exe");
             using (WaitCursor wk = new WaitCursor())
             {
                
-                     TrainOnMyDataset(false);
-                    Console.WriteLine("\nEnd of training, testing...");
+               //      TrainOnMyDataset(false);
+               //     Console.WriteLine("\nEnd of training, testing...");
                 
-                TrainOnMyDataset(true);
+              //  TrainOnMyDataset(true);
                 //MNIST_test();
             }
             // Hide console and show window
-            //  ShowWindow(handle, SW_HIDE);
+           //   ShowWindow(handle, SW_HIDE);
             clear();
-            Show();
+          //  Show();
         }
 
         void trainOnMNIST(int iterations)
@@ -405,7 +405,7 @@ namespace DigitReco
                 }
                 else
                 {
-                    MessageBox.Show("Problem z obrabianiem pliku przez pythona.");
+                  //  MessageBox.Show("Problem z obrabianiem pliku przez pythona.");
                 }
             }
         }
@@ -576,7 +576,7 @@ namespace DigitReco
 
         private void Window_Closed(object sender, EventArgs e)
         {
-               network.saveWeights();
+            //   network.saveWeights();
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
