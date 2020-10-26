@@ -2,6 +2,7 @@
 Artificial Multilayer Neural Network from scratches.
 The network consists of an input layer, one hidden layer and an output layer.
 Sigmoid function is used for activation.
+Network was tested on Snake game and Digit Recognition task.
 
 ## Snake Environment
 Classic snake game with simple rules: if snake hits a wall or it's tail - it dies, if it finds food, it grows, and if it's unable to find food for a while, it will also die.
