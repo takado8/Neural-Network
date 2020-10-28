@@ -6,7 +6,7 @@ Network was tested on Snake game and Digit Recognition task.
 
 ## Snake Environment
 Classic snake game with simple rules: if snake hits a wall or it's tail - it dies, if it finds food, it grows, and if it's unable to find food for a while, it will also die.
-Snake can see if one field ahead, right and left is safe to move on (field value is 1 or 0). Snake also knows the direction of food - positive or negative value of the normalized angle between the snake's head and the food. Finally, it's aware of it's body length and has 'sense of apetite' - value that increases with time, and drops after eating. 
+Snake can see if one field ahead, right and left is safe to move on (field value is 1 or 0). Snake also knows the direction of food - positive or negative value of the normalized angle between the snake's head and the food. Finally, it's aware of it's body length.
 
 ## Neuro-evolution
 Neuro-evolution is an unsupervised learning method for Neural Networks. The general purpose of [genetic algorithms](https://github.com/takado8/Tetris#genetic-algorithm) is to optimize a function - neural networks are basically a big functions, with thousands or millions of weights. These parameters can be searched for with standard genetic algorithm. 
