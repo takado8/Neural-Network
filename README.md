@@ -1,5 +1,5 @@
 # Neural-Network
-Artificial Multilayer Neural Network from scratches.
+Artificial Multilayer Neural Network from scratches. 
 The network consists of an input layer, one hidden layer and an output layer.
 Sigmoid function is used for activation.
 Network was tested on Snake game and Digit Recognition task.
